@@ -1,15 +1,24 @@
 {
   "name": "strapi-utils",
-  "version": "0.0.0",
+  "version": "0.0.1",
   "private": true,
+  "author": {
+    "name": "Richard Weaver",
+    "email": "richard@weaver.me.uk",
+    "url": "https://github.com/rixw"
+  },
+  "homepage": "https://github.com/rixw/strapi-utils",
+  "repository": "https://github.com/rixw/strapi-utils",
+  "bugs": "https://github.com/rixw/strapi-utils/issues",
   "workspaces": [
-    "apps/*",
     "packages/*"
   ],
   "scripts": {
     "build": "turbo run build",
     "dev": "turbo run dev",
     "lint": "turbo run lint",
+    "test": "turbo run test",
+    "test:watch": "turbo run test:watch",
     "format": "prettier --write \"**/*.{ts,tsx,md}\""
   },
   "devDependencies": {
@@ -21,5 +30,6 @@
     "node": ">=14.0.0"
   },
   "dependencies": {},
-  "packageManager": "yarn@1.22.19"
+  "packageManager": "yarn@1.22.19",
+  "license": "MIT"
 }
