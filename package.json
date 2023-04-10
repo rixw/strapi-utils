@@ -29,7 +29,9 @@
   "engines": {
     "node": ">=14.0.0"
   },
-  "dependencies": {},
+  "dependencies": {
+    "@changesets/cli": "2.26.1"
+  },
   "packageManager": "yarn@1.22.19",
   "license": "MIT"
 }

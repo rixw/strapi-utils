@@ -1,6 +1,6 @@
 # Strapi Utils
 
-This is a collection of utilities that I've created to make my life easier in working with [Strapi](https://strapi.io).
+This is a collection of utilities that I've created to make my lifes easier in working with [Strapi](https://strapi.io).
 
 ## What's inside?
 
