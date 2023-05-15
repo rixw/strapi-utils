@@ -65,27 +65,20 @@ import { Page } from './types'; // Your own type definitions
 // Instantiate the client
 const client = new StrapiClient({
   baseURL: 'https://example.com/api', // Required root of the REST API
-  contentTypes: [
-    {
-      // Array of the content types in the API
-      id: 'api::page.page', // The content type unique ID
-      singularName: 'page', // The singular name of the content type
-      pluralName: 'pages', // The plural name of the content type
-    },
-  ],
+  contentTypes: ['page', 'post'], // Singular names of entities
 });
 
 // Login - sets the JWT token in the client if using Users & Permissions plugin
 const jwt = await client.login('example@example.com', 'password');
 
 // Retrieve a list of items
-const pages = await client.fetchMany<Page>('api::page.page', {
+const pages = await client.fetchMany<Page>('page', {
   sort: 'title:asc',
   populate: '*',
 });
 
 // Retrieve a single item
-const page = await client.fetchById<Page>('api::page.page', 1);
+const page = await client.fetchById<Page>('page', 1);
 ```
 
 ## API
@@ -101,11 +94,7 @@ const page = await client.fetchById<Page>('api::page.page', 1);
 
   // An array of the content types in your API. This is used to map the UID of
   // the type to singular and plural names for building the API URLs
-  contentTypes: [{
-    id: 'api::page.page',  // The content type unique ID
-    singularName: 'page',  // The singular name of the content type
-    pluralName: 'pages'  // The plural name of the content type
-  }],
+  contentTypes: ['page', 'post'],  // The singular name of the content types
 
   // A JWT token to use for authentication. You can provide either Strapi's
   // long-lived API Tokens or, if you've cached a short-term JWT token from the
@@ -163,7 +152,7 @@ JWT token in the client. Returns the JWT token.
 `params` (`StrapiParams`) - optional parameters to pass to the API
 
 ```typescript
-const page = await client.fetchById<Page>('api::page.page', 1);
+const page = await client.fetchById<Page>('page', 1);
 ```
 
 Makes a GET request for the specified entity. Uses the contentTypes array to
@@ -179,7 +168,7 @@ as a simple object.
 #### `fetchMany<T extends StrapiEntity> => Promise<StrapiPaginatedArray<T>>`
 
 ```typescript
-const pages = await client.fetchMany<Page>('api::page.page', {
+const pages = await client.fetchMany<Page>('page', {
   sort: 'title:asc',
   populate: '*',
 });

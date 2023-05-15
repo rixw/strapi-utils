@@ -2,6 +2,7 @@ import axios, { type AxiosRequestConfig } from 'axios';
 import qs from 'qs';
 import { StrapiEntity, StrapiPaginatedArray } from '../interfaces';
 import { normaliseStrapiResponseArray, normaliseStrapiResponseItem } from '../normalise';
+import pluralize from 'pluralize';
 
 export interface StrapiContentType {
   id: string;
@@ -10,7 +11,7 @@ export interface StrapiContentType {
 }
 export interface StrapiClientOptions {
   baseUrl?: string;
-  contentTypes: StrapiContentType[];
+  contentTypes: string[];
   jwt?: string | null;
   axiosConfig?: AxiosRequestConfig;
 }
@@ -24,13 +25,15 @@ export const defaultOptions: StrapiClientOptions = {
 
 export class StrapiClient {
   opts: StrapiClientOptions;
-  private readonly entityMap: Map<string, StrapiContentType>;
+  readonly entityMap: Map<string, StrapiContentType>;
 
   constructor(private readonly options?: StrapiClientOptions) {
     this.opts = { ...defaultOptions, ...options };
     this.entityMap = new Map();
     this.opts?.contentTypes?.forEach((contentType) => {
-      this.entityMap.set(contentType.id, { ...contentType });
+      const id = `api::${contentType}.${contentType}`;
+      const pluralName = pluralize(contentType);
+      this.entityMap.set(contentType, { id, singularName: contentType, pluralName });
     });
   }
 
@@ -49,13 +52,13 @@ export class StrapiClient {
     return json.jwt;
   }
 
-  getEndpoint(entityId: string): string {
-    const contentType = this.entityMap.get(entityId);
+  getEndpoint(entityName: string): string {
+    const contentType = this.entityMap.get(entityName);
     return `${this.opts.baseUrl}/${contentType?.pluralName}`;
   }
 
-  async fetchResult(entityId: string, id?: number | null, params?: any): Promise<any> {
-    const endpoint = this.getEndpoint(entityId);
+  async fetchResult(entityName: string, id?: number | null, params?: any): Promise<any> {
+    const endpoint = this.getEndpoint(entityName);
     const query = qs.stringify(params, { addQueryPrefix: true, encodeValuesOnly: true });
     const headers = this.opts.jwt
       ? {
@@ -70,16 +73,20 @@ export class StrapiClient {
     return response.data;
   }
 
-  async fetchById<T extends StrapiEntity>(entityId: string, id: number, params?: any): Promise<T> {
-    const json = await this.fetchResult(entityId, id, params);
+  async fetchById<T extends StrapiEntity>(
+    entityName: string,
+    id: number,
+    params?: any,
+  ): Promise<T> {
+    const json = await this.fetchResult(entityName, id, params);
     return normaliseStrapiResponseItem<T>(json);
   }
 
   async fetchMany<T extends StrapiEntity>(
-    entityId: string,
+    entityName: string,
     params?: any,
   ): Promise<StrapiPaginatedArray<T>> {
-    const json = await this.fetchResult(entityId, null, params);
+    const json = await this.fetchResult(entityName, null, params);
     return normaliseStrapiResponseArray<T>(json);
   }
 }
