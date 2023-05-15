@@ -15,15 +15,17 @@ describe('StrapiClient', () => {
     const client = new StrapiClient();
     expect(client).toBeInstanceOf(StrapiClient);
     expect(client.opts.baseUrl).toBe(`${domain}/api`);
-    expect(client.opts.contentTypes).toHaveLength(0);
     expect(client.opts.jwt).toBeNull();
     expect(client.opts.axiosConfig).toBeDefined();
+    expect(client.opts.contentTypes).toHaveLength(0);
+    expect(client.entityMap).toBeDefined();
+    expect(client.entityMap.size).toBe(0);
   });
 
   it('should instantiate with provided options', async () => {
     const client = new StrapiClient({
       baseUrl: 'http://127.0.0.1:9999/api',
-      contentTypes: [{ id: 'api::page.page', singularName: 'page', pluralName: 'pages' }],
+      contentTypes: ['page'],
       jwt: '1234567890',
       axiosConfig: {
         timeout: 999,
@@ -31,18 +33,21 @@ describe('StrapiClient', () => {
     });
     expect(client).toBeInstanceOf(StrapiClient);
     expect(client.opts.baseUrl).toBe('http://127.0.0.1:9999/api');
-    expect(client.opts.contentTypes).toHaveLength(1);
-    expect(client.opts.contentTypes[0].id).toBe('api::page.page');
     expect(client.opts.jwt).toBe('1234567890');
     expect(client.opts.axiosConfig).toBeDefined();
     expect(client.opts.axiosConfig?.timeout).toBe(999);
+    expect(client.entityMap.size).toBe(1);
+    expect(client.entityMap.get('page')).toBeDefined();
+    expect(client.entityMap.get('page')?.id).toBe('api::page.page');
+    expect(client.entityMap.get('page')?.pluralName).toBe('pages');
+    expect(client.entityMap.get('page')?.singularName).toBe('page');
   });
 
   it('should get an endpoint in the format /api/pluralName', async () => {
     const client = new StrapiClient({
-      contentTypes: [{ id: 'api::page.page', singularName: 'page', pluralName: 'pages' }],
+      contentTypes: ['page'],
     });
-    const endpoint = client.getEndpoint('api::page.page');
+    const endpoint = client.getEndpoint('page');
     expect(endpoint).toBe(`${domain}/api/pages`);
   });
 
@@ -50,9 +55,9 @@ describe('StrapiClient', () => {
     const url = `${domain}/api/pages`;
     mock.onGet(url).reply(200, fixture);
     const client = new StrapiClient({
-      contentTypes: [{ id: 'api::page.page', singularName: 'page', pluralName: 'pages' }],
+      contentTypes: ['page'],
     });
-    const result = await client.fetchMany<FixtureData>('api::page.page');
+    const result = await client.fetchMany<FixtureData>('page');
     expect(result).toHaveLength(3);
     expect(result[0].id).toBe(1);
     expect(result[0].title).toBe('Root');
@@ -73,9 +78,9 @@ describe('StrapiClient', () => {
       meta: {},
     });
     const client = new StrapiClient({
-      contentTypes: [{ id: 'api::page.page', singularName: 'page', pluralName: 'pages' }],
+      contentTypes: ['page'],
     });
-    const result = await client.fetchById<FixtureData>('api::page.page', 1);
+    const result = await client.fetchById<FixtureData>('page', 1);
     expect(result).toBeDefined();
     expect(result.id).toBe(1);
     expect(result.title).toBe('Root');
@@ -88,12 +93,12 @@ describe('StrapiClient', () => {
       return [200, fixture];
     });
     const client = new StrapiClient({
-      contentTypes: [{ id: 'api::page.page', singularName: 'page', pluralName: 'pages' }],
+      contentTypes: ['page'],
       axiosConfig: {
         timeout: 12345,
       },
     });
-    const result = await client.fetchMany<FixtureData>('api::page.page');
+    const result = await client.fetchMany<FixtureData>('page');
     expect(result).toHaveLength(3);
   });
 });
