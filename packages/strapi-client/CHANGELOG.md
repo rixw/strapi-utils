@@ -1,5 +1,11 @@
 # @rixw/strapi-client
 
+## 0.0.4
+
+### Patch Changes
+
+- d82bc4c: Simplify specifying content types by singular name only
+
 ## 0.0.3
 
 ### Patch Changes
