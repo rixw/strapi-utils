@@ -1,14 +1,26 @@
-import axios, { type AxiosRequestConfig } from 'axios';
-import qs from 'qs';
-import { StrapiEntity, StrapiPaginatedArray } from '../interfaces';
-import { normaliseStrapiResponseArray, normaliseStrapiResponseItem } from '../normalise';
+import axios, { AxiosError, AxiosInstance } from 'axios';
+import rateLimit, { RateLimitedAxiosInstance } from 'axios-rate-limit';
 import pluralize from 'pluralize';
-import { StrapiClientOptions, StrapiContentType } from './types';
-import { defaultOptions } from './consts';
+import qs from 'qs';
+import { defaultOptions } from '../constants';
+import {
+  StrapiAuthenticationResponse,
+  StrapiClientOptions,
+  StrapiContentType,
+  StrapiEntity,
+  StrapiError,
+  StrapiPaginatedArray,
+  StrapiParams,
+  StrapiResponse,
+  StrapiUser,
+} from '../types';
+import { normaliseStrapiResponseArray, normaliseStrapiResponseItem } from '../normalise';
 
 export class StrapiClient {
   opts: StrapiClientOptions;
   readonly entityMap: Map<string, StrapiContentType>;
+  user?: StrapiUser;
+  axiosInstance: AxiosInstance | RateLimitedAxiosInstance;
 
   /**
    * StrapiClient constructor
@@ -19,6 +31,7 @@ export class StrapiClient {
    * @param options.jwt - The JWT token to use for authentication if using long-lived AuthTokens
    * @param options.axiosConfig - Axios configuration options, passed directly to axios
    * @param options.contentTypes - The content types you want to use with your Strapi instance
+   * @param options.maxRequestsPerSecond - The maximum number of requests per second
    */
   constructor(private readonly options?: StrapiClientOptions) {
     this.opts = { ...defaultOptions, ...options };
@@ -28,13 +41,18 @@ export class StrapiClient {
       const pluralName = pluralize(contentType);
       this.entityMap.set(contentType, { id, singularName: contentType, pluralName });
     });
+    this.axiosInstance = this.opts.maxRequestsPerSecond
+      ? rateLimit(axios.create(this.opts.axiosConfig), {
+          maxRPS: this.opts.maxRequestsPerSecond,
+        })
+      : axios.create(this.opts.axiosConfig);
   }
 
   private getUrl(path: string): string {
     return `${this.opts.url}${this.opts.prefix}${path}`;
   }
 
-  public getEndpoint(entityName: string, id?: number, params?: any): string {
+  public getEndpoint(entityName: string, id?: number, params?: StrapiParams): string {
     const contentType = this.entityMap.get(entityName);
     const query = qs.stringify(params, { addQueryPrefix: true, encodeValuesOnly: true });
     return this.getUrl(`/${contentType?.pluralName}${id ? `/${id}` : ''}${query}`);
@@ -50,8 +68,9 @@ export class StrapiClient {
       },
       data: JSON.stringify({ identifier, password }),
     });
-    const json = await response.data;
+    const json = (await response.data) as StrapiAuthenticationResponse;
     this.opts.jwt = json.jwt;
+    this.user = json.user;
     return json.jwt;
   }
 
@@ -64,33 +83,50 @@ export class StrapiClient {
    * @param params - The params to pass to the Strapi API
    * @returns
    */
-  async fetchRawResult(
-    method: 'get' | 'post' | 'put',
+  async fetchRawResult<T extends StrapiEntity>(
+    method: 'get' | 'post' | 'put' | 'delete',
     entityName: string,
     id?: number,
     data?: any,
-    params?: any,
-  ): Promise<any> {
-    const url = this.getEndpoint(entityName, id, params);
-    const headers = this.opts.jwt
-      ? {
-          Authorization: `Bearer ${this.opts.jwt}`,
-        }
-      : undefined;
-    const response = await axios({
-      ...this.opts.axiosConfig,
-      method,
-      url,
-      headers,
-      data,
-    });
-    return response.data;
+    params?: StrapiParams,
+  ): Promise<StrapiResponse<T>> {
+    try {
+      const url = this.getEndpoint(entityName, id, params);
+      const headers = this.opts.jwt
+        ? {
+            Authorization: `Bearer ${this.opts.jwt}`,
+          }
+        : undefined;
+      const response = await axios({
+        ...this.opts.axiosConfig,
+        method,
+        url,
+        headers,
+        data,
+      });
+      return response.data as StrapiResponse<T>;
+    } catch (err) {
+      const e = err as AxiosError<StrapiError>;
+      if (!e.response) {
+        throw {
+          data: null,
+          error: {
+            status: 500,
+            name: 'UnknownError',
+            message: e.message,
+            details: e,
+          },
+        };
+      } else {
+        throw e.response.data;
+      }
+    }
   }
 
   async fetchById<T extends StrapiEntity>(
     entityName: string,
     id: number,
-    params?: any,
+    params?: StrapiParams,
   ): Promise<T> {
     const json = await this.fetchRawResult('get', entityName, id, undefined, params);
     return normaliseStrapiResponseItem<T>(json);
@@ -98,17 +134,71 @@ export class StrapiClient {
 
   async fetchMany<T extends StrapiEntity>(
     entityName: string,
-    params?: any,
+    params?: StrapiParams,
   ): Promise<StrapiPaginatedArray<T>> {
     const json = await this.fetchRawResult('get', entityName, undefined, undefined, params);
     return normaliseStrapiResponseArray<T>(json);
+  }
+
+  async fetchManyPagePaginated<T extends StrapiEntity>(
+    entityName: string,
+    params?: StrapiParams,
+    page?: number,
+    pageSize?: number,
+  ): Promise<StrapiPaginatedArray<T>> {
+    const paramsWithPagination = { ...(params || {}), pagination: { page, pageSize } };
+    return this.fetchMany(entityName, paramsWithPagination);
+  }
+
+  async fetchManyOffsetPaginated<T extends StrapiEntity>(
+    entityName: string,
+    params?: StrapiParams,
+    start?: number,
+    limit?: number,
+  ): Promise<StrapiPaginatedArray<T>> {
+    const paramsWithPagination = { ...(params || {}), pagination: { start, limit } };
+    return this.fetchMany(entityName, paramsWithPagination);
+  }
+
+  /**
+   * Returns all items of a given entity type, iterating over pages until all
+   * items are retrieved
+   * @param entityName - The singular name of the entity you want to query
+   * @param params - The params to pass to the Strapi API
+   * @param limit - The number of items to fetch per page, defaults to 50
+   * @param timeout - The timeout in milliseconds - an error will be thrown if
+   * the timeout is exceeded before the last page is retrieved
+   * @returns
+   */
+  async fetchAll<T extends StrapiEntity>(
+    entityName: string,
+    params?: StrapiParams,
+    limit: number = 50,
+    timeout?: number,
+  ): Promise<T[]> {
+    const result = [] as T[];
+    const startTime = +new Date();
+    let total = 0;
+    let results = 0;
+    let start = 0;
+    do {
+      if (timeout && +new Date() - timeout > startTime) {
+        throw new Error('fetchAll: Timeout');
+      }
+      const page = await this.fetchManyOffsetPaginated<T>(entityName, params, start, limit);
+      result.push(...(page as T[]));
+      total = page.pagination?.total || 0;
+      results += page.length || 0;
+      start += limit;
+    } while (results < total);
+    return result;
   }
 
   async update<T extends StrapiEntity>(
     entityName: string,
     id: number,
     data: any,
-    params?: any,
+    params?: StrapiParams,
   ): Promise<T> {
     const json = await this.fetchRawResult('put', entityName, id, data, params);
     return normaliseStrapiResponseItem<T>(json);
@@ -120,7 +210,7 @@ export class StrapiClient {
   }
 
   async delete<T extends StrapiEntity>(entityName: string, id: number, params?: any): Promise<T> {
-    const json = await this.fetchRawResult('put', entityName, id, undefined, params);
+    const json = await this.fetchRawResult('delete', entityName, id, undefined, params);
     return normaliseStrapiResponseItem<T>(json);
   }
 }

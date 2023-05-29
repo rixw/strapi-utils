@@ -6,11 +6,13 @@
   "types": "./dist/index.d.ts",
   "scripts": {
     "build": "tsup",
-    "test": "jest"
+    "test": "jest",
+    "test:debug": "node --inspect-brk $(npm bin)/jest --runInBand"
   },
   "dependencies": {
     "@strapi/strapi": "4.9.0",
     "axios": "1.3.5",
+    "axios-rate-limit": "1.3.0",
     "pluralize": "8.0.0",
     "qs": "6.11.1",
     "tsup": "6.7.0"

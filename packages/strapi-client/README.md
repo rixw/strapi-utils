@@ -19,12 +19,14 @@ being created with a couple of objectives:
 - [x] Normalisation of Strapi's complex data structure
 - [x] Support for Strapi's Users & Permissions plugin
 - [x] Support for Strapi's API Tokens
-- [ ] Create, update and delete operations
-- [ ] Support for Strapi's internationalisation
-- [ ] Simplified API support for pagination
-- [ ] Improved API for specifying content types
-- [ ] Optional date conversion (currently forced)
-- [ ] Custom error types
+- [x] Create, update and delete operations
+- [x] Support for Strapi's internationalisation
+- [x] Custom error types
+- [x] Simplified API support for pagination
+- [x] Optional date conversion (currently forced)
+- [x] Built-in rate limiting
+- [ ] Simplified support for uploaded files
+- [ ] Improved API for specifying content types (use `ts:generate-types`)
 
 ## Compatibility
 
@@ -35,6 +37,15 @@ with Strapi v3.
 
 HTTP requests use [Axios](https://axios-http.com/) so can work on both client
 and server side.
+
+## Kudos to `strapi-sdk-js`
+
+Credit should go to [strapi-sdk-js](https://strapi-sdk-js.netlify.app/). I
+started this client library before I realised this exists (although at time of
+writing there have been no updates since February 2022). I've taken some
+ideas from this library, although I've tried to improve the typing of API
+parameters and simplify the API around unwrapping Strapi's standard data
+responses.
 
 ## Installation
 

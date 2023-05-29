@@ -1,9 +1,5 @@
 import { StrapiEntity } from '../interfaces';
-import {
-  normaliseStrapiResponse,
-  normaliseStrapiResponseArray,
-  normaliseStrapiResponseItem,
-} from '.';
+import { normaliseStrapiResponseArray, normaliseStrapiResponseItem } from '.';
 import fixture from './normalise.fixture.json';
 
 export interface FixtureData extends StrapiEntity {
@@ -39,5 +35,17 @@ describe('strapi', () => {
     expect(firstItem.child_pages?.[0]?.id).toBe(2);
     expect(firstItem.child_pages?.[0]?.title).toBe('Node');
     expect(firstItem.createdAt).toBeInstanceOf(Date);
+  });
+
+  it('should not parse dates if regex is null', async () => {
+    const result = normaliseStrapiResponseItem<FixtureData>(
+      {
+        data: fixture.data[0],
+        meta: {},
+      },
+      null,
+    );
+    expect(result).toBeDefined();
+    expect(result.createdAt).toBe('2023-04-09T11:26:45.039Z');
   });
 });
