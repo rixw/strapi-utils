@@ -1,5 +1,5 @@
-import { StrapiEntity } from '../interfaces';
 import { normaliseStrapiResponseArray, normaliseStrapiResponseItem } from '.';
+import { StrapiEntity } from '../types';
 import fixture from './normalise.fixture.json';
 
 export interface FixtureData extends StrapiEntity {

@@ -2,7 +2,7 @@ import axios from 'axios';
 import MockAdapter from 'axios-mock-adapter';
 import fixture from '../normalise/normalise.fixture.json';
 import { FixtureData } from '../normalise/normalise.spec';
-import { StrapiPaginationOffsetResponse, StrapiPaginationPageResponse } from './../interfaces';
+import { StrapiPaginationOffsetResponse, StrapiPaginationPageResponse } from './../types';
 import { StrapiClient } from './client';
 
 let mock = new MockAdapter(axios);
