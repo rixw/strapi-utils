@@ -120,7 +120,7 @@ export interface StrapiParams {
   filters?: StrapiFilters;
   populate?: '*' | string[] | StrapiPopulate;
   fields?: string[];
-  pagination: StrapiPaginationPageRequest | StrapiPaginationOffsetRequest;
+  pagination?: StrapiPaginationPageRequest | StrapiPaginationOffsetRequest;
   publicationState?: 'preview' | 'live';
   locale?: StrapiLocale | StrapiLocale[];
 }
