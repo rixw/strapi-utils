@@ -1,5 +1,11 @@
 # @rixw/strapi-client
 
+## 0.1.1
+
+### Patch Changes
+
+- 5730cf5: Add exports for types and normalisation functions
+
 ## 0.1.0
 
 ### Minor Changes
