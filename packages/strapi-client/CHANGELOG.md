@@ -1,5 +1,11 @@
 # @rixw/strapi-client
 
+## 0.1.3
+
+### Patch Changes
+
+- 5370903: Fix export path for CJS module
+
 ## 0.1.2
 
 ### Patch Changes
