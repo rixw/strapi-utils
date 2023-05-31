@@ -1,5 +1,11 @@
 # @rixw/strapi-client
 
+## 0.1.2
+
+### Patch Changes
+
+- 5d7e69c: Fix webpack compilation issue and typing of Strapi params
+
 ## 0.1.1
 
 ### Patch Changes
