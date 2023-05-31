@@ -8,7 +8,7 @@ import {
   StrapiResponseItem,
 } from '../types';
 
-export const recursiveNormalise = <T extends StrapiEntity>(
+const recursiveNormalise = <T extends StrapiEntity>(
   item: StrapiResponseItem<T>,
   parseDates: RegExp | null = DATE_PROPERTY_REGEX,
 ): T => {
