@@ -3,6 +3,7 @@
   "version": "0.1.2",
   "description": "A generic client SDK for Strapi REST APIs",
   "main": "./dist/index.js",
+  "module": "./dist/index.mjs",
   "types": "./dist/index.d.ts",
   "scripts": {
     "build": "tsup",
@@ -44,10 +45,10 @@
   },
   "license": "MIT",
   "exports": {
-    "require": "./dist/index.cjs",
+    "require": "./dist/index.js",
     "import": "./dist/index.mjs",
-    "node": "./dist/index.cjs",
-    "default": "./dist/index.cjs"
+    "node": "./dist/index.js",
+    "default": "./dist/index.js"
   },
   "publishConfig": {
     "access": "public"
