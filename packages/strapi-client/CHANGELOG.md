@@ -1,5 +1,11 @@
 # @rixw/strapi-client
 
+## 0.1.4
+
+### Patch Changes
+
+- 82334f2: Adds the fetchFirst method and fixes typing and jsdoc comments
+
 ## 0.1.3
 
 ### Patch Changes
