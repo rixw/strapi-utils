@@ -8,11 +8,22 @@ import {
   StrapiResponseItem,
 } from '../types';
 
+/**
+ * Normalises a Strapi response item to a simple object or array of objects.
+ * Acts recursively to normalise nested data properties or arrays.
+ * @param item - the item to normalise
+ * @param parseDates - a regex to match property names against to identify date
+ * properties that will be converted to Javascript Date objects. Pass false to
+ * turn off date conversion. Do not pass to use the default regex.
+ * @returns The normalised item or items
+ */
 const recursiveNormalise = <T extends StrapiEntity>(
   item: StrapiResponseItem<T>,
-  parseDates: RegExp | null = DATE_PROPERTY_REGEX,
+  parseDates?: RegExp | false,
 ): T => {
   const { id, attributes, meta } = item;
+  const enableDateParsing = parseDates !== false;
+  const parseDatesRegex = parseDates || DATE_PROPERTY_REGEX;
   const result: Record<string, any> = {
     id,
     meta,
@@ -33,7 +44,7 @@ const recursiveNormalise = <T extends StrapiEntity>(
         // Data object - normalise
         result[key] = recursiveNormalise(data);
       }
-    } else if (parseDates?.test(key) && ISO_DATE_REGEX.test(value)) {
+    } else if (enableDateParsing && parseDatesRegex?.test(key) && ISO_DATE_REGEX.test(value)) {
       result[key] = new Date(value);
     } else {
       result[key] = value;
@@ -42,9 +53,18 @@ const recursiveNormalise = <T extends StrapiEntity>(
   return result as T;
 };
 
+/**
+ * Normalises a Strapi response to an array of simple objects.
+ * Acts recursively to normalise nested data properties or arrays.
+ * @param response - The raw Strapi API response
+ * @param parseDates - a regex to match property names against to identify date
+ * properties that will be converted to Javascript Date objects. Pass false to
+ * turn off date conversion. Do not pass to use the default regex.
+ * @returns The normalised items
+ */
 export const normaliseStrapiResponseArray = <T extends StrapiEntity>(
   response: StrapiResponse<T>,
-  parseDates: RegExp | null = DATE_PROPERTY_REGEX,
+  parseDates?: RegExp | false,
 ): StrapiPaginatedArray<T> => {
   const { data, meta } = response;
   const result = (data as StrapiResponseItem<T>[]).map((item) =>
@@ -56,17 +76,35 @@ export const normaliseStrapiResponseArray = <T extends StrapiEntity>(
   return result;
 };
 
+/**
+ * Normalises a Strapi response item to a simple object.
+ * Acts recursively to normalise nested data properties or arrays.
+ * @param response - The raw Strapi API response
+ * @param parseDates - a regex to match property names against to identify date
+ * properties that will be converted to Javascript Date objects. Pass false to
+ * turn off date conversion. Do not pass to use the default regex.
+ * @returns The normalised item
+ */
 export const normaliseStrapiResponseItem = <T extends StrapiEntity>(
   response: StrapiResponse<T>,
-  parseDates: RegExp | null = DATE_PROPERTY_REGEX,
+  parseDates?: RegExp | false,
 ): T => {
   const { data } = response;
   return recursiveNormalise(data as StrapiResponseItem<T>, parseDates);
 };
 
+/**
+ * Normalises a Strapi response item to a simple object or array of objects.
+ * Acts recursively to normalise nested data properties or arrays.
+ * @param response - The raw Strapi API response
+ * @param parseDates - a regex to match property names against to identify date
+ * properties that will be converted to Javascript Date objects. Pass false to
+ * turn off date conversion. Do not pass to use the default regex.
+ * @returns The normalised item
+ */
 export const normaliseStrapiResponse = <T extends StrapiEntity>(
   response: StrapiResponse<T>,
-  parseDates: RegExp | null = DATE_PROPERTY_REGEX,
+  parseDates?: RegExp | false,
 ): T | StrapiPaginatedArray<T> => {
   const { data } = response;
   if (Array.isArray(data)) {
