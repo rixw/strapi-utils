@@ -37,13 +37,13 @@ describe('strapi', () => {
     expect(firstItem.createdAt).toBeInstanceOf(Date);
   });
 
-  it('should not parse dates if regex is null', async () => {
+  it('should not parse dates if param is set to false', async () => {
     const result = normaliseStrapiResponseItem<FixtureData>(
       {
         data: fixture.data[0],
         meta: {},
       },
-      null,
+      false,
     );
     expect(result).toBeDefined();
     expect(result.createdAt).toBe('2023-04-09T11:26:45.039Z');
