@@ -64,6 +64,7 @@ export interface StrapiPaginatedArray<T extends StrapiEntity> extends Array<T> {
 
 export interface StrapiPopulate {
   [key: string]:
+    | '*'
     | boolean
     | {
         on: {
