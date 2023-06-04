@@ -52,13 +52,26 @@ export class StrapiClient {
     return `${this.opts.url}${this.opts.prefix}${path}`;
   }
 
+  /**
+   * Gets the endpoint URL for the given entity name, ID and params
+   * @param entityName - The singular name of the entity you want to query/write
+   * @param id - The ID of the entity you want to query/write, or undefined
+   * @param params - The params to pass to the Strapi API
+   * @returns The endpoint URL
+   */
   public getEndpoint(entityName: string, id?: number, params?: StrapiParams): string {
     const contentType = this.entityMap.get(entityName);
     const query = qs.stringify(params, { addQueryPrefix: true, encodeValuesOnly: true });
     return this.getUrl(`/${contentType?.pluralName}${id ? `/${id}` : ''}${query}`);
   }
 
-  async login(identifier: string, password: string): Promise<string> {
+  /**
+   * Performs login using the Strapi Users & Permissions plugin
+   * @param identifier - The username or email address of the user
+   * @param password - The password of the user
+   * @returns A JWT token
+   */
+  public async login(identifier: string, password: string): Promise<string> {
     const response = await axios.get(this.getUrl('/auth/local'), {
       ...this.opts.axiosConfig,
       method: 'POST',
@@ -81,7 +94,7 @@ export class StrapiClient {
    * @param id - The ID of the entity you want to query/write, or undefined
    * @param data - The POST/PUT data object to send to the Strapi API, or undefined
    * @param params - The params to pass to the Strapi API
-   * @returns
+   * @returns The response from the Strapi API
    */
   async fetchRawResult<T extends StrapiEntity>(
     method: 'get' | 'post' | 'put' | 'delete',
@@ -123,6 +136,13 @@ export class StrapiClient {
     }
   }
 
+  /**
+   * Returns a single item of a given entity type with the given ID
+   * @param entityName - The singular name of the entity you want to query
+   * @param id - The ID of the entity you want to query
+   * @param params - The params to pass to the Strapi API
+   * @returns A single item of the given entity type
+   */
   async fetchById<T extends StrapiEntity>(
     entityName: string,
     id: number,
@@ -132,6 +152,14 @@ export class StrapiClient {
     return normaliseStrapiResponseItem<T>(json);
   }
 
+  /**
+   * Returns a single item of a given entity type using the given params. Use
+   * the `filters` and `sort` params to control which item is returned
+   * @param entityName - The singular name of the entity you want to query
+   * @param id - The ID of the entity you want to query
+   * @param params - The params to pass to the Strapi API
+   * @returns A single item of the given entity type, or null if none found
+   */
   async fetchFirst<T extends StrapiEntity>(
     entityName: string,
     params?: StrapiParams,
@@ -142,6 +170,12 @@ export class StrapiClient {
     return array.length > 0 ? array[0] : null;
   }
 
+  /**
+   * Returns an array of items of a given entity type using the given params.
+   * @param entityName - The singular name of the entity you want to query
+   * @param params - The params to pass to the Strapi API
+   * @returns An array of items of the given entity type
+   */
   async fetchMany<T extends StrapiEntity>(
     entityName: string,
     params?: StrapiParams,
@@ -150,6 +184,15 @@ export class StrapiClient {
     return normaliseStrapiResponseArray<T>(json);
   }
 
+  /**
+   * Returns an array of items of a given entity type using the given params
+   * and page-based pagination options
+   * @param entityName - The singular name of the entity you want to query
+   * @param params - The params to pass to the Strapi API
+   * @param page - The page number to fetch
+   * @param pageSize - The number of items to fetch per page
+   * @returns An array of items of the given entity type
+   */
   async fetchManyPagePaginated<T extends StrapiEntity>(
     entityName: string,
     params?: StrapiParams,
@@ -160,6 +203,15 @@ export class StrapiClient {
     return this.fetchMany(entityName, paramsWithPagination);
   }
 
+  /**
+   * Returns an array of items of a given entity type using the given params
+   * and offset pagination options
+   * @param entityName - The singular name of the entity you want to query
+   * @param params - The params to pass to the Strapi API
+   * @param start - The start index to fetch from
+   * @param limit - The number of items to fetch per page
+   * @returns An array of items of the given entity type
+   */
   async fetchManyOffsetPaginated<T extends StrapiEntity>(
     entityName: string,
     params?: StrapiParams,
@@ -178,7 +230,7 @@ export class StrapiClient {
    * @param limit - The number of items to fetch per page, defaults to 50
    * @param timeout - The timeout in milliseconds - an error will be thrown if
    * the timeout is exceeded before the last page is retrieved
-   * @returns
+   * @returns An array of items of the given entity type
    */
   async fetchAll<T extends StrapiEntity>(
     entityName: string,
@@ -204,6 +256,14 @@ export class StrapiClient {
     return result;
   }
 
+  /**
+   * Updates a single item of a given entity type with the given ID
+   * @param entityName - The singular name of the entity you want to update
+   * @param id - The ID of the entity you want to update
+   * @param data - The data to update the entity with
+   * @param params - The params to pass to the Strapi API
+   * @returns The updated entity
+   */
   async update<T extends StrapiEntity>(
     entityName: string,
     id: number,
@@ -214,11 +274,25 @@ export class StrapiClient {
     return normaliseStrapiResponseItem<T>(json);
   }
 
+  /**
+   * Creates a single item of a given entity type
+   * @param entityName - The singular name of the entity you want to update
+   * @param data - The data to update the entity with
+   * @param params - The params to pass to the Strapi API
+   * @returns The created entity
+   */
   async create<T extends StrapiEntity>(entityName: string, data: any, params?: any): Promise<T> {
     const json = await this.fetchRawResult('post', entityName, undefined, data, params);
     return normaliseStrapiResponseItem<T>(json);
   }
 
+  /**
+   * Deletes a single item of the given entity type with the given ID
+   * @param entityName - The singular name of the entity you want to update
+   * @param id - The ID of the entity you want to update
+   * @param params - The params to pass to the Strapi API
+   * @returns The deleted entity
+   */
   async delete<T extends StrapiEntity>(entityName: string, id: number, params?: any): Promise<T> {
     const json = await this.fetchRawResult('delete', entityName, id, undefined, params);
     return normaliseStrapiResponseItem<T>(json);
