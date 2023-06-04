@@ -103,19 +103,23 @@ export type StrapiFilterOperator =
 
 export type StrapiFilterGrouping = '$and' | '$or' | '$not';
 
-export interface StrapiFilters {
-  [key: string]: StrapiFilterWithOperator | StrapiFilterWithGrouping;
-}
+export type StrapiFilterWithGrouping = {
+  [key in StrapiFilterGrouping]: [StrapiFilterWithOperator];
+};
+
+export type StrapiFilterOperand = string | string[] | number | number[] | boolean;
 
 export type StrapiFilterWithOperator = {
-  [key in StrapiFilterOperator]: string | string[] | number | number[] | boolean;
+  [key in StrapiFilterOperator]?: StrapiFilterOperand;
 };
 
-export type StrapiFilterWithGrouping = {
-  [key in StrapiFilterGrouping]: StrapiFilters[];
+export type StrapiFiltersWithOperator = {
+  [key: string]: StrapiFilterWithOperator;
 };
 
-export interface StrapiParams {
+export type StrapiFilters = StrapiFilterWithGrouping | StrapiFiltersWithOperator;
+
+export type StrapiParams = {
   sort?: string | string[];
   filters?: StrapiFilters;
   populate?: '*' | string[] | StrapiPopulate;
@@ -123,7 +127,7 @@ export interface StrapiParams {
   pagination?: StrapiPaginationPageRequest | StrapiPaginationOffsetRequest;
   publicationState?: 'preview' | 'live';
   locale?: StrapiLocale | StrapiLocale[];
-}
+};
 
 export type StrapiLocale =
   | 'af'
