@@ -132,6 +132,16 @@ export class StrapiClient {
     return normaliseStrapiResponseItem<T>(json);
   }
 
+  async fetchFirst<T extends StrapiEntity>(
+    entityName: string,
+    params?: StrapiParams,
+  ): Promise<T | null> {
+    const useParams = { ...(params || {}), pagination: { page: 1, pageSize: 1 } };
+    const json = await this.fetchRawResult('get', entityName, undefined, undefined, useParams);
+    const array = normaliseStrapiResponseArray<T>(json);
+    return array.length > 0 ? array[0] : null;
+  }
+
   async fetchMany<T extends StrapiEntity>(
     entityName: string,
     params?: StrapiParams,

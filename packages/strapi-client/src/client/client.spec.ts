@@ -54,159 +54,190 @@ describe('StrapiClient', () => {
     expect(endpoint).toBe(`http://127.0.0.1:1337/api/pages`);
   });
 
-  it('should return a normalised result with pagination', async () => {
-    const url = `http://127.0.0.1:1337/api/pages`;
-    mock.onGet(url).reply(200, fixture);
-    const client = new StrapiClient({
-      contentTypes: ['page'],
-    });
-    const result = await client.fetchMany<FixtureData>('page');
-    expect(result).toHaveLength(3);
-    expect(result[0].id).toBe(1);
-    expect(result[0].title).toBe('Root');
-    expect(result[1].id).toBe(2);
-    expect(result[1].title).toBe('Node');
-    expect(result[2].id).toBe(3);
-    expect(result[2].title).toBe('Leaf');
-    const pagination = result.pagination as StrapiPaginationPageResponse;
-    expect(pagination).toBeDefined();
-    expect(pagination.page).toBe(1);
-    expect(pagination.pageSize).toBe(25);
-  });
-
-  it('should return a normalised single item result', async () => {
-    const url = `http://127.0.0.1:1337/api/pages/1`;
-    mock.onGet(url).reply(200, {
-      data: fixture.data[0],
-      meta: {},
-    });
-    const client = new StrapiClient({
-      contentTypes: ['page'],
-    });
-    const result = await client.fetchById<FixtureData>('page', 1);
-    expect(result).toBeDefined();
-    expect(result.id).toBe(1);
-    expect(result.title).toBe('Root');
-  });
-
-  it('should respect provided axios config', async () => {
-    const url = `http://127.0.0.1:1337/api/pages`;
-    mock.onGet(url).reply((config) => {
-      expect(config.timeout).toBe(12345);
-      return [200, fixture];
-    });
-    const client = new StrapiClient({
-      contentTypes: ['page'],
-      axiosConfig: {
-        timeout: 12345,
-      },
-    });
-    const result = await client.fetchMany<FixtureData>('page');
-    expect(result).toHaveLength(3);
-  });
-
-  it('should create a new item and return the normalised single item result', async () => {
-    const url = `http://127.0.0.1:1337/api/pages`;
-    mock.onPost(url).reply(201, {
-      data: fixture.data[0],
-      meta: {},
-    });
-    const client = new StrapiClient({
-      contentTypes: ['page'],
-    });
-    const result = await client.create<FixtureData>('page', fixture.data[0].attributes);
-    expect(result).toBeDefined();
-    expect(result.id).toBe(1);
-    expect(result.title).toBe('Root');
-  });
-
-  it('should update an item and return the normalised single item result', async () => {
-    const url = `http://127.0.0.1:1337/api/pages/1`;
-    mock.onPut(url).reply(200, {
-      data: fixture.data[0],
-      meta: {},
-    });
-    const client = new StrapiClient({
-      contentTypes: ['page'],
-    });
-    const result = await client.update<FixtureData>('page', 1, fixture.data[0].attributes);
-    expect(result).toBeDefined();
-    expect(result.id).toBe(1);
-    expect(result.title).toBe('Root');
-  });
-
-  it('should delete an item and return the normalised single item result', async () => {
-    const url = `http://127.0.0.1:1337/api/pages/2`;
-    mock.onDelete(url).reply(200, {
-      data: fixture.data[1],
-      meta: {},
-    });
-    const client = new StrapiClient({
-      contentTypes: ['page'],
-    });
-    const result = await client.delete<FixtureData>('page', 2);
-    expect(result).toBeDefined();
-    expect(result.id).toBe(2);
-    expect(result.title).toBe('Node');
-  });
-
-  it('should fetch all items and return a simple array', async () => {
-    mock
-      .onGet()
-      .replyOnce(200, {
-        data: [fixture.data[0]],
-        meta: { pagination: { start: 0, limit: 1, total: 3 } as StrapiPaginationOffsetResponse },
-      })
-      .onGet()
-      .replyOnce(200, {
-        data: [fixture.data[1]],
-        meta: { pagination: { start: 1, limit: 1, total: 3 } as StrapiPaginationOffsetResponse },
-      })
-      .onGet()
-      .replyOnce(200, {
-        data: [fixture.data[2]],
-        meta: { pagination: { start: 2, limit: 1, total: 3 } as StrapiPaginationOffsetResponse },
+  describe('fetchMany', () => {
+    it('should respect provided axios config', async () => {
+      const url = `http://127.0.0.1:1337/api/pages`;
+      mock.onGet(url).reply((config) => {
+        expect(config.timeout).toBe(12345);
+        return [200, fixture];
       });
-    const client = new StrapiClient({
-      contentTypes: ['page'],
+      const client = new StrapiClient({
+        contentTypes: ['page'],
+        axiosConfig: {
+          timeout: 12345,
+        },
+      });
+      const result = await client.fetchMany<FixtureData>('page');
+      expect(result).toHaveLength(3);
     });
-    const result = await client.fetchAll<FixtureData>('page', undefined, 1);
-    expect(result).toBeDefined();
-    expect(result.length).toBe(3);
-    expect(result[0].id).toBe(1);
-    expect(result[0].title).toBe('Root');
-    expect(result[1].id).toBe(2);
-    expect(result[1].title).toBe('Node');
-    expect(result[2].id).toBe(3);
-    expect(result[2].title).toBe('Leaf');
+
+    it('should return a normalised result with pagination', async () => {
+      const url = `http://127.0.0.1:1337/api/pages`;
+      mock.onGet(url).reply(200, fixture);
+      const client = new StrapiClient({
+        contentTypes: ['page'],
+      });
+      const result = await client.fetchMany<FixtureData>('page');
+      expect(result).toHaveLength(3);
+      expect(result[0].id).toBe(1);
+      expect(result[0].title).toBe('Root');
+      expect(result[1].id).toBe(2);
+      expect(result[1].title).toBe('Node');
+      expect(result[2].id).toBe(3);
+      expect(result[2].title).toBe('Leaf');
+      const pagination = result.pagination as StrapiPaginationPageResponse;
+      expect(pagination).toBeDefined();
+      expect(pagination.page).toBe(1);
+      expect(pagination.pageSize).toBe(25);
+    });
   });
 
-  it('should throw if fetching all items takes longer than the timeout', async () => {
-    const slowMock = new MockAdapter(axios, { delayResponse: 500 });
-    slowMock
-      .onGet()
-      .replyOnce(200, {
-        data: [fixture.data[0]],
-        meta: { pagination: { start: 0, limit: 1, total: 3 } as StrapiPaginationOffsetResponse },
-      })
-      .onGet()
-      .replyOnce(200, {
-        data: [fixture.data[1]],
-        meta: { pagination: { start: 1, limit: 1, total: 3 } as StrapiPaginationOffsetResponse },
-      })
-      .onGet()
-      .replyOnce(200, {
-        data: [fixture.data[2]],
-        meta: { pagination: { start: 2, limit: 1, total: 3 } as StrapiPaginationOffsetResponse },
+  describe('fetchById', () => {
+    it('should return a normalised single item result', async () => {
+      const url = `http://127.0.0.1:1337/api/pages/1`;
+      mock.onGet(url).reply(200, {
+        data: fixture.data[0],
+        meta: {},
       });
-    const client = new StrapiClient({
-      contentTypes: ['page'],
+      const client = new StrapiClient({
+        contentTypes: ['page'],
+      });
+      const result = await client.fetchById<FixtureData>('page', 1);
+      expect(result).toBeDefined();
+      expect(result.id).toBe(1);
+      expect(result.title).toBe('Root');
     });
-    try {
-      await client.fetchAll<FixtureData>('page', undefined, 1, 750);
-    } catch (error) {
-      expect(error).toBeInstanceOf(Error);
-      expect(error).toHaveProperty('message');
-    }
+  });
+
+  describe('fetchFirst', () => {
+    it('should return a normalised single item result', async () => {
+      const url = /http:\/\/127.0.0.1:1337\/api\/pages.+/;
+      mock.onGet(url).reply(200, {
+        data: fixture.data.filter((item) => item.attributes.title === 'Leaf'),
+        meta: {},
+      });
+      const client = new StrapiClient({
+        contentTypes: ['page'],
+      });
+      const result = await client.fetchFirst<FixtureData>('page', {
+        filters: { title: { $eq: 'Leaf' } },
+      });
+      expect(result).toBeDefined();
+      expect(result?.id).toBe(3);
+      expect(result?.title).toBe('Leaf');
+    });
+  });
+
+  describe('create', () => {
+    it('should create a new item and return the normalised single item result', async () => {
+      const url = `http://127.0.0.1:1337/api/pages`;
+      mock.onPost(url).reply(201, {
+        data: fixture.data[0],
+        meta: {},
+      });
+      const client = new StrapiClient({
+        contentTypes: ['page'],
+      });
+      const result = await client.create<FixtureData>('page', fixture.data[0].attributes);
+      expect(result).toBeDefined();
+      expect(result.id).toBe(1);
+      expect(result.title).toBe('Root');
+    });
+  });
+
+  describe('update', () => {
+    it('should update an item and return the normalised single item result', async () => {
+      const url = `http://127.0.0.1:1337/api/pages/1`;
+      mock.onPut(url).reply(200, {
+        data: fixture.data[0],
+        meta: {},
+      });
+      const client = new StrapiClient({
+        contentTypes: ['page'],
+      });
+      const result = await client.update<FixtureData>('page', 1, fixture.data[0].attributes);
+      expect(result).toBeDefined();
+      expect(result.id).toBe(1);
+      expect(result.title).toBe('Root');
+    });
+  });
+
+  describe('delete', () => {
+    it('should delete an item and return the normalised single item result', async () => {
+      const url = `http://127.0.0.1:1337/api/pages/2`;
+      mock.onDelete(url).reply(200, {
+        data: fixture.data[1],
+        meta: {},
+      });
+      const client = new StrapiClient({
+        contentTypes: ['page'],
+      });
+      const result = await client.delete<FixtureData>('page', 2);
+      expect(result).toBeDefined();
+      expect(result.id).toBe(2);
+      expect(result.title).toBe('Node');
+    });
+  });
+
+  describe('fetchAll', () => {
+    it('should fetch all items and return a simple array', async () => {
+      mock
+        .onGet()
+        .replyOnce(200, {
+          data: [fixture.data[0]],
+          meta: { pagination: { start: 0, limit: 1, total: 3 } as StrapiPaginationOffsetResponse },
+        })
+        .onGet()
+        .replyOnce(200, {
+          data: [fixture.data[1]],
+          meta: { pagination: { start: 1, limit: 1, total: 3 } as StrapiPaginationOffsetResponse },
+        })
+        .onGet()
+        .replyOnce(200, {
+          data: [fixture.data[2]],
+          meta: { pagination: { start: 2, limit: 1, total: 3 } as StrapiPaginationOffsetResponse },
+        });
+      const client = new StrapiClient({
+        contentTypes: ['page'],
+      });
+      const result = await client.fetchAll<FixtureData>('page', undefined, 1);
+      expect(result).toBeDefined();
+      expect(result.length).toBe(3);
+      expect(result[0].id).toBe(1);
+      expect(result[0].title).toBe('Root');
+      expect(result[1].id).toBe(2);
+      expect(result[1].title).toBe('Node');
+      expect(result[2].id).toBe(3);
+      expect(result[2].title).toBe('Leaf');
+    });
+
+    it('should throw if fetching all items takes longer than the timeout', async () => {
+      const slowMock = new MockAdapter(axios, { delayResponse: 500 });
+      slowMock
+        .onGet()
+        .replyOnce(200, {
+          data: [fixture.data[0]],
+          meta: { pagination: { start: 0, limit: 1, total: 3 } as StrapiPaginationOffsetResponse },
+        })
+        .onGet()
+        .replyOnce(200, {
+          data: [fixture.data[1]],
+          meta: { pagination: { start: 1, limit: 1, total: 3 } as StrapiPaginationOffsetResponse },
+        })
+        .onGet()
+        .replyOnce(200, {
+          data: [fixture.data[2]],
+          meta: { pagination: { start: 2, limit: 1, total: 3 } as StrapiPaginationOffsetResponse },
+        });
+      const client = new StrapiClient({
+        contentTypes: ['page'],
+      });
+      try {
+        await client.fetchAll<FixtureData>('page', undefined, 1, 750);
+      } catch (error) {
+        expect(error).toBeInstanceOf(Error);
+        expect(error).toHaveProperty('message');
+      }
+    });
   });
 });
