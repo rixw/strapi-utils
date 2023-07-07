@@ -102,7 +102,7 @@ export class StrapiClient {
     id?: number,
     data?: any,
     params?: StrapiParams,
-  ): Promise<StrapiResponse<T>> {
+  ): Promise<StrapiResponse> {
     try {
       const url = this.getEndpoint(entityName, id, params);
       const headers = this.opts.jwt
@@ -117,7 +117,7 @@ export class StrapiClient {
         headers,
         data,
       });
-      return response.data as StrapiResponse<T>;
+      return response.data as StrapiResponse;
     } catch (err) {
       const e = err as AxiosError<StrapiError>;
       if (!e.response) {

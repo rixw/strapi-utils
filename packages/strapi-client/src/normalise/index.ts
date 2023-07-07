@@ -24,7 +24,7 @@ const recursiveNormalise = <T extends StrapiEntity>(
   if ('id' in item === false) throw new Error('Cannot normalise item without an id');
   const { id } = item as { id: number };
   const enableDateParsing = parseDates !== false;
-  const parseDatesRegex = typeof parseDates === 'boolean' ? DATE_PROPERTY_REGEX : parseDates;
+  const parseDatesRegex = parseDates || DATE_PROPERTY_REGEX;
   let result: Record<string, any> = { id, meta: 'meta' in item ? item['meta'] : undefined };
   const attributes =
     'attributes' in item

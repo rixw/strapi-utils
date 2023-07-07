@@ -1,6 +1,11 @@
-import { normaliseStrapiResponseArray, normaliseStrapiResponseItem } from '.';
-import fixture from './normalise.fixture.json';
+import {
+  normaliseStrapiResponse,
+  normaliseStrapiResponseArray,
+  normaliseStrapiResponseItem,
+} from '.';
+import { StrapiPaginatedArray } from '../types';
 import fixtureTransformed from './normalise-transformed.fixture.json';
+import fixture from './normalise.fixture.json';
 
 export interface FixtureData {
   id: number;
@@ -19,10 +24,10 @@ describe('strapi', () => {
   beforeEach(async () => {});
 
   it('should normalise a standard Strapi API single result', async () => {
-    const result = normaliseStrapiResponseItem<FixtureData>({
+    const result = normaliseStrapiResponse<FixtureData>({
       data: fixture.data[0],
       meta: {},
-    });
+    }) as FixtureData;
     expect(result).toBeDefined();
     expect(result.id).toBe(1);
     expect(result.title).toBe('Root');
@@ -30,8 +35,11 @@ describe('strapi', () => {
   });
 
   it('should normalise a standard Strapi API array result', async () => {
-    const result = normaliseStrapiResponseArray<FixtureData>(fixture);
+    const result = normaliseStrapiResponse<FixtureData>(
+      fixture,
+    ) as StrapiPaginatedArray<FixtureData>;
     expect(result).toHaveLength(3);
+    expect(result).toHaveProperty('pagination');
     const firstItem = result[0];
     expect(firstItem.id).toBe(1);
     expect(firstItem.title).toBe('Root');
@@ -42,19 +50,21 @@ describe('strapi', () => {
   });
 
   it('should not parse dates if param is set to false', async () => {
-    const result = normaliseStrapiResponseItem<FixtureData>(
+    const result = normaliseStrapiResponse<FixtureData>(
       {
         data: fixture.data[0],
         meta: {},
       },
       false,
-    );
+    ) as FixtureData;
     expect(result).toBeDefined();
     expect(result.createdAt).toBe('2023-04-09T11:26:45.039Z');
   });
 
   it('should normalise a transformed Strapi API array result', async () => {
-    const result = normaliseStrapiResponseItem<FixtureData>(fixtureTransformed);
+    const result = normaliseStrapiResponse<FixtureData>(
+      fixtureTransformed,
+    ) as StrapiPaginatedArray<FixtureData>;
     expect(result).toHaveLength(3);
     const firstItem = result[0];
     expect(firstItem.id).toBe(1);

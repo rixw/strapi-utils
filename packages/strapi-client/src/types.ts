@@ -111,7 +111,7 @@ export type StrapiFilters = StrapiFilterWithGrouping | StrapiFiltersWithOperator
 export type StrapiParams = {
   sort?: string | string[];
   filters?: StrapiFilters;
-  populate?: '*' | string[] | StrapiPopulate;
+  populate?: string | string[] | StrapiPopulate;
   fields?: string[];
   pagination?: StrapiPaginationPageRequest | StrapiPaginationOffsetRequest;
   publicationState?: 'preview' | 'live';
