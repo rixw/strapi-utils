@@ -90,6 +90,44 @@ describe('StrapiClient', () => {
       expect(pagination.page).toBe(1);
       expect(pagination.pageSize).toBe(25);
     });
+
+    it('should support Strapi parameters', async () => {
+      const url = `http://127.0.0.1:1337/api/pages`;
+      mock.onGet().reply(200, fixture);
+      const client = new StrapiClient({
+        contentTypes: ['page'],
+      });
+      const result = await client.fetchMany<FixtureData>('page', {
+        populate: 'deep,3',
+        sort: ['title:asc', 'createdAt:desc'],
+        pagination: {
+          page: 1,
+          pageSize: 3,
+          withCount: true,
+        },
+        publicationState: 'live',
+        locale: 'en',
+        fields: ['title', 'slug'],
+      });
+      expect(mock.history.get).toHaveLength(1);
+      const calledUrl = new URL(mock.history.get[0].url as string);
+      const { searchParams } = calledUrl;
+      expect(searchParams.get('populate')).toBe('deep,3');
+      expect(searchParams.get('sort[0]')).toBe('title:asc');
+      expect(searchParams.get('sort[1]')).toBe('createdAt:desc');
+      expect(searchParams.get('pagination[page]')).toBe('1');
+      expect(searchParams.get('pagination[pageSize]')).toBe('3');
+      expect(searchParams.get('pagination[withCount]')).toBe('true');
+      expect(searchParams.get('publicationState')).toBe('live');
+      expect(searchParams.get('locale')).toBe('en');
+      expect(searchParams.get('fields[1]')).toBe('title');
+      expect(searchParams.get('fields[1]')).toBe('slug');
+      expect(result).toHaveLength(3);
+      const pagination = result.pagination as StrapiPaginationPageResponse;
+      expect(pagination).toBeDefined();
+      expect(pagination.page).toBe(1);
+      expect(pagination.pageSize).toBe(25);
+    });
   });
 
   describe('fetchById', () => {
