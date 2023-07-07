@@ -1,68 +1,56 @@
 import type { AxiosRequestConfig } from 'axios';
 
-export interface StrapiAuthenticationResponse {
+export type StrapiAuthenticationResponse = {
   user: Record<string, unknown>;
   jwt: string;
-}
+};
 
-export interface StrapiEntity {
+export type StrapiEntity = {
   id?: number;
   createdAt?: Date;
   updatedAt?: Date;
   publishedAt?: Date;
-}
+};
 
-export interface StrapiPaginationPageRequest {
+export type StrapiPaginationPageRequest = {
   page?: number;
   pageSize?: number;
   withCount?: boolean;
-}
+};
 
-export interface StrapiPaginationOffsetRequest {
+export type StrapiPaginationOffsetRequest = {
   start?: number;
   limit?: number;
   withCount?: boolean;
-}
+};
 
-export interface StrapiPaginationPageResponse {
+export type StrapiPaginationPageResponse = {
   page: number;
   pageSize: number;
   pageCount?: number;
   total?: number;
-}
+};
 
-export interface StrapiPaginationOffsetResponse {
+export type StrapiPaginationOffsetResponse = {
   start: number;
   limit: number;
   total?: number;
-}
+};
 
-export interface StrapiMetaResponse {
+export type StrapiMetaResponse = {
   pagination?: StrapiPaginationPageResponse | StrapiPaginationOffsetResponse;
-}
+};
 
-export interface StrapiResponseAuditFields {
-  createdAt?: string;
-  updatedAt?: string;
-  publishedAt?: string;
-}
-
-export interface StrapiResponseItem<T extends StrapiEntity> {
-  id: number;
-  attributes: Omit<T, 'id' | 'createdAt' | 'updatedAt' | 'publishedAt'> | StrapiResponseAuditFields;
-  meta?: StrapiMetaResponse;
-}
-
-export interface StrapiResponse<T extends StrapiEntity> {
-  data: StrapiResponseItem<T> | StrapiResponseItem<T>[];
+export type StrapiResponse = {
+  data: object | object[];
   meta: StrapiMetaResponse;
-}
+};
 
-export interface StrapiPaginatedArray<T extends StrapiEntity> extends Array<T> {
+export type StrapiPaginatedArray<T extends StrapiEntity> = Array<T> & {
   pagination: StrapiPaginationPageResponse | StrapiPaginationOffsetResponse;
-}
+};
 
-export interface StrapiPopulate {
+export type StrapiPopulate = {
   [key: string]:
     | '*'
     | boolean
@@ -78,7 +66,7 @@ export interface StrapiPopulate {
         filters?: StrapiFilters;
         populate?: '*' | string[] | StrapiPopulate;
       };
-}
+};
 
 export type StrapiFilterOperator =
   | '$eq'
@@ -632,23 +620,24 @@ export type StrapiLocale =
   | 'zu'
   | 'zu-ZA';
 
-export interface StrapiContentType {
+export type StrapiContentType = {
   id: string;
   singularName: string;
   pluralName: string;
-}
-export interface StrapiClientOptions {
+};
+
+export type StrapiClientOptions = {
   url?: string;
   prefix?: string;
   contentTypes: string[];
   jwt?: string | null;
   axiosConfig?: AxiosRequestConfig;
   maxRequestsPerSecond?: number;
-}
+};
 
 export type StrapiUser = Record<string, unknown> | null;
 
-export interface StrapiError {
+export type StrapiError = {
   data: null;
   error: {
     status: number;
@@ -656,29 +645,29 @@ export interface StrapiError {
     message: string;
     details: Record<string, unknown>;
   };
-}
+};
 
-export interface StrapiAuthenticationData {
+export type StrapiAuthenticationData = {
   identifier: string;
   password: string;
-}
+};
 
-export interface StrapiRegistrationData {
+export type StrapiRegistrationData = {
   username: string;
   email: string;
   password: string;
-}
+};
 
-export interface StrapiForgotPasswordData {
+export type StrapiForgotPasswordData = {
   email: string;
-}
+};
 
-export interface StrapiResetPasswordData {
+export type StrapiResetPasswordData = {
   code: string;
   password: string;
   passwordConfirmation: string;
-}
+};
 
-export interface StrapiEmailConfirmationData {
+export type StrapiEmailConfirmationData = {
   email: string;
-}
+};

@@ -5,7 +5,6 @@ import {
   StrapiPaginationOffsetResponse,
   StrapiPaginationPageResponse,
   StrapiResponse,
-  StrapiResponseItem,
 } from '../types';
 
 /**
@@ -18,22 +17,24 @@ import {
  * @returns The normalised item or items
  */
 const recursiveNormalise = <T extends StrapiEntity>(
-  item: StrapiResponseItem<T>,
+  item: object,
   parseDates?: RegExp | false,
 ): T => {
-  const { id, attributes, meta } = item;
+  // Validate that we have an id
+  if ('id' in item === false) throw new Error('Cannot normalise item without an id');
+  const { id } = item as { id: number };
   const enableDateParsing = parseDates !== false;
-  const parseDatesRegex = parseDates || DATE_PROPERTY_REGEX;
-  const result: Record<string, any> = {
-    id,
-    meta,
-  };
-  const attrs = Object.entries(attributes);
-  for (let i = 0; i < attrs.length; i++) {
-    const [key, value] = attrs[i];
+  const parseDatesRegex = typeof parseDates === 'boolean' ? DATE_PROPERTY_REGEX : parseDates;
+  let result: Record<string, any> = { id, meta: 'meta' in item ? item['meta'] : undefined };
+  const attributes =
+    'attributes' in item
+      ? Object.entries(item['attributes'] as object)
+      : Object.entries(item).filter((x) => x[0] !== 'id' && x[0] !== 'meta');
+  for (let i = 0; i < attributes.length; i++) {
+    const [key, value] = attributes[i];
     // Is this a data property?
     if (value && typeof value === 'object' && value.hasOwnProperty('data')) {
-      const { data } = value;
+      const { data } = value as { data: object | null };
       if (data === null) {
         // Data null - set to null
         result[key] = null;
@@ -63,11 +64,11 @@ const recursiveNormalise = <T extends StrapiEntity>(
  * @returns The normalised items
  */
 export const normaliseStrapiResponseArray = <T extends StrapiEntity>(
-  response: StrapiResponse<T>,
+  response: StrapiResponse,
   parseDates?: RegExp | false,
 ): StrapiPaginatedArray<T> => {
   const { data, meta } = response;
-  const result = (data as StrapiResponseItem<T>[]).map((item) =>
+  const result = (data as object[]).map((item) =>
     recursiveNormalise(item, parseDates),
   ) as StrapiPaginatedArray<T>;
   result.pagination = meta.pagination as
@@ -86,11 +87,11 @@ export const normaliseStrapiResponseArray = <T extends StrapiEntity>(
  * @returns The normalised item
  */
 export const normaliseStrapiResponseItem = <T extends StrapiEntity>(
-  response: StrapiResponse<T>,
+  response: StrapiResponse,
   parseDates?: RegExp | false,
 ): T => {
   const { data } = response;
-  return recursiveNormalise(data as StrapiResponseItem<T>, parseDates);
+  return recursiveNormalise(data, parseDates) as T;
 };
 
 /**
@@ -103,13 +104,13 @@ export const normaliseStrapiResponseItem = <T extends StrapiEntity>(
  * @returns The normalised item
  */
 export const normaliseStrapiResponse = <T extends StrapiEntity>(
-  response: StrapiResponse<T>,
+  response: StrapiResponse,
   parseDates?: RegExp | false,
 ): T | StrapiPaginatedArray<T> => {
   const { data } = response;
   if (Array.isArray(data)) {
-    return normaliseStrapiResponseArray(response, parseDates);
+    return normaliseStrapiResponseArray<T>(response, parseDates);
   } else {
-    return normaliseStrapiResponseItem(response, parseDates);
+    return normaliseStrapiResponseItem<T>(response, parseDates);
   }
 };

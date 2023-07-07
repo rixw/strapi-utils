@@ -1,0 +1,90 @@
+{
+  "data": [
+    {
+      "id": 1,
+      "title": "Root",
+      "formatted_title": "This is the _root_",
+      "slug": "root",
+      "createdAt": "2023-04-09T11:26:45.039Z",
+      "updatedAt": "2023-04-09T11:26:49.426Z",
+      "publishedAt": "2023-04-09T11:26:49.419Z",
+      "url": "/root",
+      "child_pages": [
+        {
+          "id": 2,
+          "title": "Node",
+          "formatted_title": "This is a _node_",
+          "slug": "node",
+          "createdAt": "2023-04-09T11:27:20.374Z",
+          "updatedAt": "2023-04-09T11:27:26.629Z",
+          "publishedAt": "2023-04-09T11:27:26.607Z",
+          "url": "/root/node"
+        }
+      ],
+      "parent_page": {}
+    },
+    {
+      "id": 2,
+      "title": "Node",
+      "formatted_title": "This is a _node_",
+      "slug": "node",
+      "createdAt": "2023-04-09T11:27:20.374Z",
+      "updatedAt": "2023-04-09T11:27:26.629Z",
+      "publishedAt": "2023-04-09T11:27:26.607Z",
+      "url": "/root/node",
+      "child_pages": [
+        {
+          "id": 3,
+          "title": "Leaf",
+          "formatted_title": "This is the _leaf_",
+          "slug": "leaf",
+          "createdAt": "2023-04-09T11:27:55.334Z",
+          "updatedAt": "2023-04-09T11:27:56.193Z",
+          "publishedAt": "2023-04-09T11:27:56.187Z",
+          "url": "/root/node/leaf"
+        }
+      ],
+      "parent_page": {
+        "id": 1,
+        "title": "Root",
+        "formatted_title": "This is the _root_",
+        "slug": "root",
+        "createdAt": "2023-04-09T11:26:45.039Z",
+        "updatedAt": "2023-04-09T11:26:49.426Z",
+        "publishedAt": "2023-04-09T11:26:49.419Z",
+        "url": "/root"
+      }
+    },
+    {
+      "id": 3,
+      "title": "Leaf",
+      "formatted_title": "This is the _leaf_",
+      "slug": "leaf",
+      "createdAt": "2023-04-09T11:27:55.334Z",
+      "updatedAt": "2023-04-09T11:27:56.193Z",
+      "publishedAt": "2023-04-09T11:27:56.187Z",
+      "url": "/root/node/leaf",
+      "child_pages": {
+        "data": []
+      },
+      "parent_page": {
+        "id": 2,
+        "title": "Node",
+        "formatted_title": "This is a _node_",
+        "slug": "node",
+        "createdAt": "2023-04-09T11:27:20.374Z",
+        "updatedAt": "2023-04-09T11:27:26.629Z",
+        "publishedAt": "2023-04-09T11:27:26.607Z",
+        "url": "/root/node"
+      }
+    }
+  ],
+  "meta": {
+    "pagination": {
+      "page": 1,
+      "pageSize": 25,
+      "pageCount": 1,
+      "total": 3
+    }
+  }
+}
