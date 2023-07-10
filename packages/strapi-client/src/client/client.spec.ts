@@ -120,7 +120,7 @@ describe('StrapiClient', () => {
       expect(searchParams.get('pagination[withCount]')).toBe('true');
       expect(searchParams.get('publicationState')).toBe('live');
       expect(searchParams.get('locale')).toBe('en');
-      expect(searchParams.get('fields[1]')).toBe('title');
+      expect(searchParams.get('fields[0]')).toBe('title');
       expect(searchParams.get('fields[1]')).toBe('slug');
       expect(result).toHaveLength(3);
       const pagination = result.pagination as StrapiPaginationPageResponse;
