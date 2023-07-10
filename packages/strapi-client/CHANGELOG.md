@@ -1,5 +1,11 @@
 # @rixw/strapi-client
 
+## 0.2.1
+
+### Patch Changes
+
+- 2131f52: Fix typing issue with or/and/not filters and add support for date filters
+
 ## 0.2.0
 
 ### Minor Changes
