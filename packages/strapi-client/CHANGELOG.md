@@ -1,5 +1,11 @@
 # @rixw/strapi-client
 
+## 0.2.0
+
+### Minor Changes
+
+- 0e87f20: Implement support for Transformer and Populate Deep plugins
+
 ## 0.1.4
 
 ### Patch Changes
