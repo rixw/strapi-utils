@@ -151,18 +151,36 @@ describe('StrapiClient', () => {
     it('should return a normalised single item result', async () => {
       const url = /http:\/\/127.0.0.1:1337\/api\/pages.+/;
       mock.onGet(url).reply(200, {
-        data: fixture.data.filter((item) => item.attributes.title === 'Leaf'),
+        data: fixture.data.filter((item) => item.attributes.url === '/root/node/leaf'),
         meta: {},
       });
       const client = new StrapiClient({
         contentTypes: ['page'],
       });
+      const now = new Date();
       const result = await client.fetchFirst<FixtureData>('page', {
-        filters: { title: { $eq: 'Leaf' } },
+        filters: {
+          $or: [{ title: { $eq: 'Root' } }, { title: { $eq: 'Node' } }, { title: { $eq: 'Leaf' } }],
+          $and: [
+            { formatted_title: { $notNull: true } },
+            { formatted_title: { $notContains: 'HIDE ME' } },
+            { url: { $eq: '/root/node/leaf' } },
+          ],
+          publishedAt: { $lt: now },
+        },
       });
       expect(result).toBeDefined();
       expect(result?.id).toBe(3);
       expect(result?.title).toBe('Leaf');
+      const calledUrl = new URL(mock.history.get[0].url as string);
+      const { searchParams } = calledUrl;
+      expect(searchParams.get('filters[$or][0][title][$eq]')).toBe('Root');
+      expect(searchParams.get('filters[$or][1][title][$eq]')).toBe('Node');
+      expect(searchParams.get('filters[$or][2][title][$eq]')).toBe('Leaf');
+      expect(searchParams.get('filters[$and][0][formatted_title][$notNull]')).toBe('true');
+      expect(searchParams.get('filters[$and][1][formatted_title][$notContains]')).toBe('HIDE ME');
+      expect(searchParams.get('filters[$and][2][url][$eq]')).toBe('/root/node/leaf');
+      expect(searchParams.get('filters[publishedAt][$lt]')).toBe(now.toISOString());
     });
   });
 
