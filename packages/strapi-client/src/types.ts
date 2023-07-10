@@ -93,10 +93,10 @@ export type StrapiFilterOperator =
 export type StrapiFilterGrouping = '$and' | '$or' | '$not';
 
 export type StrapiFilterWithGrouping = {
-  [key in StrapiFilterGrouping]: [StrapiFilterWithOperator];
+  [key in StrapiFilterGrouping]?: StrapiFilters[];
 };
 
-export type StrapiFilterOperand = string | string[] | number | number[] | boolean;
+export type StrapiFilterOperand = string | string[] | number | number[] | boolean | Date | Date[];
 
 export type StrapiFilterWithOperator = {
   [key in StrapiFilterOperator]?: StrapiFilterOperand;
