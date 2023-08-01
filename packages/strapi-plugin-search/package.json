@@ -2,6 +2,7 @@
   "name": "@rixw/strapi-plugin-search",
   "version": "2.0.0",
   "description": "This is the description of the plugin.",
+  "license": "MIT",
   "author": {
     "name": "Richard Weaver"
   },

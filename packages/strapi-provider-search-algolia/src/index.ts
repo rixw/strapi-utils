@@ -7,7 +7,7 @@ import {
   DeleteProps,
   Provider,
   ProviderInstance,
-} from 'strapi-plugin-search-rw/server/types';
+} from '@rixw/strapi-plugin-search/server/types';
 
 declare var strapi: {
   log: {
