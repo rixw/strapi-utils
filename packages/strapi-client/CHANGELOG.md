@@ -1,5 +1,11 @@
 # @rixw/strapi-client
 
+## 0.3.0
+
+### Minor Changes
+
+- c0ab4af: Implemented search plugins
+
 ## 0.2.1
 
 ### Patch Changes
