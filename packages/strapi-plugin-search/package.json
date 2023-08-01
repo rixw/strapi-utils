@@ -1,0 +1,30 @@
+{
+  "name": "@rixw/strapi-plugin-search",
+  "version": "2.0.0",
+  "description": "This is the description of the plugin.",
+  "author": {
+    "name": "Richard Weaver"
+  },
+  "maintainers": [
+    {
+      "name": "Richard Weaver"
+    }
+  ],
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "test": "jest",
+    "test:debug": "node --inspect-brk $(npm bin)/jest --runInBand"
+  },
+  "dependencies": {
+    "@strapi/strapi": "^4.11.4"
+  },
+  "devDependencies": {
+    "@strapi/typescript-utils": "^4.11.4"
+  },
+  "strapi": {
+    "name": "strapi-plugin-search",
+    "description": "Strapi plugin to interface with site search engines",
+    "kind": "plugin",
+    "displayName": "Search"
+  }
+}
