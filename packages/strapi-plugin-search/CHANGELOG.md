@@ -1,5 +1,11 @@
 # @rixw/strapi-plugin-search
 
+## 0.3.6
+
+### Patch Changes
+
+- 1e760d7: Update publish config to specify dist directory
+
 ## 0.3.5
 
 ### Patch Changes
