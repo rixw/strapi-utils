@@ -1,5 +1,13 @@
 # @rixw/strapi-provider-search-algolia
 
+## 0.3.3
+
+### Patch Changes
+
+- 6b8f01f: Update Typescript build output format
+- Updated dependencies [6b8f01f]
+  - @rixw/strapi-plugin-search@0.3.3
+
 ## 0.3.2
 
 ### Patch Changes
