@@ -1,6 +1,6 @@
 {
   "name": "@rixw/strapi-plugin-search",
-  "version": "0.3.2",
+  "version": "0.3.3",
   "description": "Site search engine integration plugin for Strapi",
   "keywords": [
     "strapi",
