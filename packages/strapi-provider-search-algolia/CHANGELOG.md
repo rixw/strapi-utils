@@ -1,5 +1,13 @@
 # @rixw/strapi-provider-search-algolia
 
+## 0.3.7
+
+### Patch Changes
+
+- c238f95: Add exclude list to tsconfig
+- Updated dependencies [c238f95]
+  - @rixw/strapi-plugin-search@0.3.8
+
 ## 0.3.6
 
 ### Patch Changes

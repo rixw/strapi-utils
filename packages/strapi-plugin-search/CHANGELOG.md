@@ -1,5 +1,11 @@
 # @rixw/strapi-plugin-search
 
+## 0.3.8
+
+### Patch Changes
+
+- c238f95: Add exclude list to tsconfig
+
 ## 0.3.7
 
 ### Patch Changes
