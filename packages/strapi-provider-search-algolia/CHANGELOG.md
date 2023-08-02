@@ -1,5 +1,13 @@
 # @rixw/strapi-provider-search-algolia
 
+## 0.3.5
+
+### Patch Changes
+
+- 65d4b0e: Bump turbo, change publish scripts and output config
+- Updated dependencies [65d4b0e]
+  - @rixw/strapi-plugin-search@0.3.7
+
 ## 0.3.4
 
 ### Patch Changes

@@ -1,5 +1,11 @@
 # @rixw/strapi-client
 
+## 0.3.2
+
+### Patch Changes
+
+- 65d4b0e: Bump turbo, change publish scripts and output config
+
 ## 0.3.1
 
 ### Patch Changes

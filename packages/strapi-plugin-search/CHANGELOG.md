@@ -1,5 +1,11 @@
 # @rixw/strapi-plugin-search
 
+## 0.3.7
+
+### Patch Changes
+
+- 65d4b0e: Bump turbo, change publish scripts and output config
+
 ## 0.3.6
 
 ### Patch Changes
