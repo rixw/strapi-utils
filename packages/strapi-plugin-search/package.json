@@ -22,8 +22,8 @@
   },
   "scripts": {
     "build": "tsc -p tsconfig.json",
-    "publish:latest": "cd dist && npm publish --tag latest",
-    "prepublish:latest": "yarn clean && yarn build && node dist/setup-package.js",
+    "publish": "cd dist && npm publish --tag latest",
+    "prepublish": "yarn clean && yarn build && node dist/setup-package.js",
     "clean": "rm -rf dist"
   },
   "peerDependencies": {
