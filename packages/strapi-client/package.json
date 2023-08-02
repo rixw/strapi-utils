@@ -2,6 +2,31 @@
   "name": "@rixw/strapi-client",
   "version": "0.3.0",
   "description": "A generic client SDK for Strapi REST APIs",
+  "keywords": [
+    "strapi",
+    "client",
+    "sdk",
+    "rest"
+  ],
+  "homepage": "https://github.com/rixw/strapi-utils/strapi-client",
+  "bugs": "https://github.com/rixw/strapi-utils/issues",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/rixw/strapi-utils",
+    "directory": "packages/strapi-client"
+  },
+  "license": "MIT",
+  "author": {
+    "name": "Richard Weaver",
+    "email": "richard@weaver.me.uk",
+    "url": "https://github.com/rixw"
+  },
+  "exports": {
+    "require": "./dist/index.js",
+    "import": "./dist/index.mjs",
+    "node": "./dist/index.js",
+    "default": "./dist/index.js"
+  },
   "main": "./dist/index.js",
   "module": "./dist/index.mjs",
   "types": "./dist/index.d.ts",
@@ -28,35 +53,10 @@
     "ts-jest": "^29.1.0",
     "typescript": "^5.0.4"
   },
-  "homepage": "https://github.com/rixw/strapi-utils/strapi-client",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/rixw/strapi-utils",
-    "directory": "packages/strapi-client"
-  },
-  "bugs": "https://github.com/rixw/strapi-utils/issues",
-  "author": {
-    "name": "Richard Weaver",
-    "email": "richard@weaver.me.uk",
-    "url": "https://github.com/rixw"
-  },
   "engines": {
     "node": ">=14.0.0"
   },
-  "license": "MIT",
-  "exports": {
-    "require": "./dist/index.js",
-    "import": "./dist/index.mjs",
-    "node": "./dist/index.js",
-    "default": "./dist/index.js"
-  },
   "publishConfig": {
     "access": "public"
-  },
-  "keywords": [
-    "strapi",
-    "client",
-    "sdk",
-    "rest"
-  ]
+  }
 }

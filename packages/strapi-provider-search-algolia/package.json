@@ -2,15 +2,24 @@
   "name": "@rixw/strapi-provider-search-algolia",
   "version": "0.3.1",
   "description": "This is the description of the plugin.",
+  "keywords": [
+    "strapi",
+    "search",
+    "algolia"
+  ],
+  "homepage": "https://github.com/rixw/strapi-utils/strapi-provider-search-algolia",
+  "bugs": "https://github.com/rixw/strapi-utils/issues",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/rixw/strapi-utils",
+    "directory": "packages/strapi-provider-search-algolia"
+  },
   "license": "MIT",
   "author": {
-    "name": "Richard Weaver"
+    "name": "Richard Weaver",
+    "email": "richard@weaver.me.uk",
+    "url": "https://github.com/rixw"
   },
-  "maintainers": [
-    {
-      "name": "Richard Weaver"
-    }
-  ],
   "main": "./dist/index.js",
   "module": "./dist/index.mjs",
   "types": "./dist/index.d.ts",
@@ -18,8 +27,8 @@
     "build": "tsc -p tsconfig.json"
   },
   "dependencies": {
-    "algoliasearch": "^4.17.0",
-    "@rixw/strapi-plugin-search": "*"
+    "@rixw/strapi-plugin-search": "*",
+    "algoliasearch": "^4.17.0"
   },
   "devDependencies": {
     "tsconfig": "*"
@@ -29,5 +38,8 @@
     "description": "Description of Algolia Provider plugin",
     "isProvider": true,
     "displayName": "Algolia Provider"
+  },
+  "publishConfig": {
+    "access": "public"
   }
 }

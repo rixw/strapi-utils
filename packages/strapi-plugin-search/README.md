@@ -1,3 +1,3 @@
-# Strapi plugin search
+# Strapi search plugin
 
-A quick description of search.
+This is a Typescript rewrite with minor enhancements of the [strapi-plugin-search](https://mattie-bundle.mattiebelt.com/) plugin.

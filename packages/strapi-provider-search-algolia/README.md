@@ -1,3 +1,3 @@
-# Strapi plugin algolia-provider
+# Strapi search plugin Algolia provider
 
-A quick description of algolia-provider.
+This is a Typescript rewrite with minor enhancements of the [strapi-provider-search-algolia](https://mattie-bundle.mattiebelt.com/) plugin.
