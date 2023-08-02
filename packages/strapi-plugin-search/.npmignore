@@ -1,0 +1,13 @@
+public/
+coverage/
+.circleci/
+.github/
+.nvmrc
+.eslintrc
+codecov.yml
+*.map
+*.spec.*
+setup-package.*
+**/__tests__/**
+**/__mocks__/** 
+tsconfig.*

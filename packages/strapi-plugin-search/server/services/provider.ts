@@ -1,4 +1,4 @@
-import { EntityProps, PluginConfig, Provider } from '../types';
+import { EntityProps, PluginConfig, Provider } from '../../types';
 import { wrapMethodWithError } from '../utils/error';
 import { sanitize } from '../utils/sanitize';
 import { validateProvider } from '../utils/validate';

@@ -1,5 +1,5 @@
 import { yup } from '@strapi/utils';
-import { PluginConfig, ProviderInstance } from '../types';
+import { PluginConfig, ProviderInstance } from '../../types';
 
 const PROVIDER_METHODS = [
   'create',

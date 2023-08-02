@@ -2,17 +2,11 @@
   "extends": "tsconfig/base.json",
   "compilerOptions": {
     "resolveJsonModule": true,
-    "outDir": "dist",
     "declaration": true,
-    "declarationMap": true
+    "declarationMap": true,
+    "baseUrl": "../../",
   },
   "include": [
     "**/*.ts"
-  ],
-  "exclude": [
-    "dist",
-    "build",
-    "node_modules",
-    "**/*.spec.ts",
   ]
 }

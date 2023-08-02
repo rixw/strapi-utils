@@ -2,16 +2,14 @@
   "extends": "@strapi/typescript-utils/tsconfigs/server",
   "compilerOptions": {
     "resolveJsonModule": true,
-    "outDir": "dist",
+    "outDir": "./dist",
     "declaration": true,
     "declarationMap": true
   },
   "include": [
-    "types",
-    "src",
-  ],
-  "exclude": [
-    "node_modules",
-    "**/*.spec.ts"
+    "./server/**/*",
+    "./strapi-server.*",
+    "./setup-package.ts",
+    "types/index.d.ts",
   ]
 }

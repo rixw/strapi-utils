@@ -1,5 +1,5 @@
 import { validateConfig } from '../utils/validate';
-import { PluginConfig } from '../types';
+import { PluginConfig } from '../../types';
 
 import { Strapi } from '@strapi/strapi';
 

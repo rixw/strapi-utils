@@ -1,7 +1,7 @@
-import { has } from 'lodash/fp';
-import { sanitize } from '../utils/sanitize';
-import { PluginConfig } from '../types';
 import { Event } from '@strapi/database/lib/lifecycles';
+import { has } from 'lodash/fp';
+import { PluginConfig } from '../../types';
+import { sanitize } from '../utils/sanitize';
 
 type AfterEvent = Event & {
   result: {

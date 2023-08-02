@@ -26,8 +26,8 @@
     "build": "tsc -p tsconfig.json"
   },
   "dependencies": {
-    "@rixw/strapi-plugin-search": "*",
-    "algoliasearch": "^4.17.0"
+    "algoliasearch": "^4.17.0",
+    "@rixw/strapi-plugin-search": "*"
   },
   "devDependencies": {
     "tsconfig": "*"
@@ -36,9 +36,6 @@
     "access": "public"
   },
   "strapi": {
-    "name": "algolia-provider",
-    "description": "Description of Algolia Provider plugin",
-    "isProvider": true,
-    "displayName": "Algolia Provider"
+    "isProvider": true
   }
 }

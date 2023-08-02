@@ -5,7 +5,6 @@ import {
   CreateProps,
   DeleteManyProps,
   DeleteProps,
-  Provider,
   ProviderInstance,
 } from '@rixw/strapi-plugin-search';
 
