@@ -20,7 +20,7 @@
     "test": "turbo run test",
     "test:watch": "turbo run test:watch",
     "format": "prettier --write \"**/*.{ts,tsx,md}\"",
-    "publish-packages": "turbo run build lint test && changeset version && changeset publish"
+    "publish-packages": "turbo run build lint test prepare && changeset version && changeset publish"
   },
   "devDependencies": {
     "eslint-config-custom": "*",
