@@ -1,5 +1,11 @@
 # @rixw/strapi-provider-search-algolia
 
+## 0.3.6
+
+### Patch Changes
+
+- 554e2d4: Add prepare script
+
 ## 0.3.5
 
 ### Patch Changes
