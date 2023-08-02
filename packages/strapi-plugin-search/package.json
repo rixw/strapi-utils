@@ -20,6 +20,11 @@
     "email": "richard@weaver.me.uk",
     "url": "https://github.com/rixw"
   },
+  "files": [
+    "./dist"
+  ],
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
   "scripts": {
     "build": "tsc -p tsconfig.json"
   },
@@ -27,15 +32,16 @@
     "@strapi/strapi": "^4.11.4"
   },
   "devDependencies": {
-    "@strapi/typescript-utils": "^4.11.4"
+    "@strapi/typescript-utils": "^4.11.4",
+    "typescript": "5.1.6"
+  },
+  "publishConfig": {
+    "access": "public"
   },
   "strapi": {
     "name": "strapi-plugin-search",
     "description": "Strapi plugin to interface with site search engines",
     "kind": "plugin",
     "displayName": "Search"
-  },
-  "publishConfig": {
-    "access": "public"
   }
 }

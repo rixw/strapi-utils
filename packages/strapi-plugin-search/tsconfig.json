@@ -3,15 +3,14 @@
   "compilerOptions": {
     "resolveJsonModule": true,
     "outDir": "dist",
-    "rootDir": "."
+    "declaration": true,
+    "declarationMap": true
   },
   "include": [
-    "server",
-    "server/**/*.json",
+    "types",
+    "src",
   ],
   "exclude": [
-    "dist/",
-    "admin/",
     "node_modules",
     "**/*.spec.ts"
   ]

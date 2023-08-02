@@ -21,7 +21,6 @@
     "url": "https://github.com/rixw"
   },
   "main": "./dist/index.js",
-  "module": "./dist/index.mjs",
   "types": "./dist/index.d.ts",
   "scripts": {
     "build": "tsc -p tsconfig.json"
@@ -33,13 +32,13 @@
   "devDependencies": {
     "tsconfig": "*"
   },
+  "publishConfig": {
+    "access": "public"
+  },
   "strapi": {
     "name": "algolia-provider",
     "description": "Description of Algolia Provider plugin",
     "isProvider": true,
     "displayName": "Algolia Provider"
-  },
-  "publishConfig": {
-    "access": "public"
   }
 }
