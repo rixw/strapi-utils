@@ -12,9 +12,7 @@
     }
   ],
   "scripts": {
-    "build": "tsc -p tsconfig.json",
-    "test": "jest",
-    "test:debug": "node --inspect-brk $(npm bin)/jest --runInBand"
+    "build": "tsc -p tsconfig.json"
   },
   "dependencies": {
     "@strapi/strapi": "^4.11.4"

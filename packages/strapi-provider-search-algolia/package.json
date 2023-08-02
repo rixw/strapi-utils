@@ -15,9 +15,7 @@
   "module": "./dist/index.mjs",
   "types": "./dist/index.d.ts",
   "scripts": {
-    "build": "tsc -p tsconfig.json",
-    "test": "jest",
-    "test:debug": "node --inspect-brk $(npm bin)/jest --runInBand"
+    "build": "tsc -p tsconfig.json"
   },
   "dependencies": {
     "algoliasearch": "^4.17.0",
