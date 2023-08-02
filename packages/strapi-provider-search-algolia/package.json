@@ -1,6 +1,6 @@
 {
   "name": "@rixw/strapi-provider-search-algolia",
-  "version": "0.3.1",
+  "version": "0.3.2",
   "description": "This is the description of the plugin.",
   "keywords": [
     "strapi",
