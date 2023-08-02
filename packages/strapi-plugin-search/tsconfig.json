@@ -11,5 +11,11 @@
     "./strapi-server.*",
     "./setup-package.ts",
     "types/index.d.ts",
+  ],
+  "exclude": [
+    "dist/**/*",
+    "build",
+    "node_modules",
+    "**/*.spec.ts"
   ]
 }
