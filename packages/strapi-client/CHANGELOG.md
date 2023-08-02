@@ -1,5 +1,11 @@
 # @rixw/strapi-client
 
+## 0.3.1
+
+### Patch Changes
+
+- da7d90d: Updated package details and readme
+
 ## 0.3.0
 
 ### Minor Changes

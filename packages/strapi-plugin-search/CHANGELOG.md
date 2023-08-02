@@ -1,5 +1,11 @@
 # @rixw/strapi-plugin-search
 
+## 0.3.2
+
+### Patch Changes
+
+- da7d90d: Updated package details and readme
+
 ## 0.3.1
 
 ### Patch Changes
