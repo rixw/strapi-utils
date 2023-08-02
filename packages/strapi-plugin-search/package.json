@@ -22,8 +22,7 @@
   },
   "scripts": {
     "build": "tsc -p tsconfig.json",
-    "publish": "cd dist && npm publish --tag latest",
-    "prepublish": "yarn clean && yarn build && node dist/setup-package.js",
+    "prepare": "yarn clean && yarn build && node dist/setup-package.js",
     "clean": "rm -rf dist"
   },
   "peerDependencies": {
@@ -37,7 +36,8 @@
     "typescript": "^5.1.6"
   },
   "publishConfig": {
-    "access": "public"
+    "access": "public",
+    "directory": "dist"
   },
   "strapi": {
     "name": "strapi-plugin-search",
