@@ -1,5 +1,11 @@
 # @rixw/strapi-plugin-search
 
+## 0.4.1
+
+### Patch Changes
+
+- baf57a4: Remove strapi logging from register function
+
 ## 0.4.0
 
 ### Minor Changes
