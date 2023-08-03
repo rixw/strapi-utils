@@ -1,5 +1,16 @@
 # @rixw/strapi-provider-search-algolia
 
+## 0.4.0
+
+### Minor Changes
+
+- 1c9d6fd: Change to unscoped packages
+
+### Patch Changes
+
+- Updated dependencies [1c9d6fd]
+  - strapi-plugin-search-index@0.4.0
+
 ## 0.3.7
 
 ### Patch Changes
