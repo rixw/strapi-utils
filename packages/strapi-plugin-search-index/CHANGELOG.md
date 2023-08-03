@@ -1,5 +1,11 @@
 # @rixw/strapi-plugin-search
 
+## 0.4.10
+
+### Patch Changes
+
+- 67373b3: Implement transforms
+
 ## 0.4.9
 
 ### Patch Changes
