@@ -1,5 +1,11 @@
 # @rixw/strapi-plugin-search
 
+## 0.4.2
+
+### Patch Changes
+
+- d4d822e: Tidy up logging
+
 ## 0.4.1
 
 ### Patch Changes
