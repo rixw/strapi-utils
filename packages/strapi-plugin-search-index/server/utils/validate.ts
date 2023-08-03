@@ -57,9 +57,9 @@ const validateProvider = (provider: ProviderInstance) => {
       return key === method;
     });
     console.debug(`Validating ${method} found provider method`, providerMethod);
-    if (typeof providerMethod !== 'function') {
+    if (!providerMethod) {
       throw new Error(
-        `Provider validation error: Required method '${method}' isn't implemented in the provider (has type '${typeof providerMethod}').`,
+        `Provider validation error: Required method '${method}' isn't implemented in the provider.`,
       );
     }
   });
