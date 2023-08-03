@@ -1,5 +1,11 @@
 # @rixw/strapi-plugin-search
 
+## 0.4.12
+
+### Patch Changes
+
+- 6fde3f6: Update logging of transformations
+
 ## 0.4.11
 
 ### Patch Changes
