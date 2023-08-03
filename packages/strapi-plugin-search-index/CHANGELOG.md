@@ -1,5 +1,11 @@
 # @rixw/strapi-plugin-search
 
+## 0.4.6
+
+### Patch Changes
+
+- 60d4f5c: Convert provider loading to require
+
 ## 0.4.5
 
 ### Patch Changes
