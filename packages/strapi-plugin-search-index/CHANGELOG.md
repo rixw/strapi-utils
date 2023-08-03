@@ -1,5 +1,11 @@
 # @rixw/strapi-plugin-search
 
+## 0.4.13
+
+### Patch Changes
+
+- 6221546: Fix assignment bug in sanitize
+
 ## 0.4.12
 
 ### Patch Changes
