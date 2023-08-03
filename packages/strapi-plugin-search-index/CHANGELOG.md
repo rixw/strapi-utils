@@ -1,5 +1,11 @@
 # @rixw/strapi-plugin-search
 
+## 0.4.9
+
+### Patch Changes
+
+- 7e80b4f: Fix provider validation error
+
 ## 0.4.8
 
 ### Patch Changes
