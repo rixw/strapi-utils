@@ -11,3 +11,5 @@ setup-package.*
 **/__tests__/**
 **/__mocks__/** 
 tsconfig.*
+index.ts
+.turbo/

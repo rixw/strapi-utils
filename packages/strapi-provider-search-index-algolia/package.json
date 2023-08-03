@@ -20,8 +20,8 @@
     "email": "richard@weaver.me.uk",
     "url": "https://github.com/rixw"
   },
-  "main": "./dist/index.js",
-  "types": "./dist/index.d.ts",
+  "main": "./index.js",
+  "types": "./index.d.ts",
   "scripts": {
     "build": "tsc -p tsconfig.json",
     "prebuild": "yarn clean",
