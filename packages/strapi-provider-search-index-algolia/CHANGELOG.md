@@ -1,5 +1,11 @@
 # @rixw/strapi-provider-search-algolia
 
+## 0.4.2
+
+### Patch Changes
+
+- bb35ed9: Fix default export
+
 ## 0.4.1
 
 ### Patch Changes
