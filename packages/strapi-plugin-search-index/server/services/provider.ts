@@ -53,7 +53,8 @@ const provider = () => ({
       try {
         strapi.log.debug(`Importing ${providerName} from ${modulePath}`);
         useProvider = require(modulePath) as Provider;
-        strapi.log.debug(`Imported ${providerName} from ${modulePath}`, useProvider);
+        strapi.log.debug(`Imported ${providerName} from ${modulePath}`);
+        console.debug(`Imported ${providerName} from ${modulePath}`, useProvider);
       } catch (error) {
         const newError = new Error(
           `Could not load provider ${providerName} (resolved to ${modulePath}).`,
