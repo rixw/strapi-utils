@@ -26,7 +26,7 @@ type AlgoliaInstance = ProviderInstance & {
   client: SearchClient;
 };
 
-const provider = {
+export = {
   /**
    * Initiates the algolia search provider
    *
@@ -237,5 +237,3 @@ const provider = {
     return result;
   },
 };
-
-export default provider;
