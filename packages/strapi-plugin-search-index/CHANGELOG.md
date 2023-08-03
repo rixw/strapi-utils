@@ -1,5 +1,11 @@
 # @rixw/strapi-plugin-search
 
+## 0.4.4
+
+### Patch Changes
+
+- f522db9: Updated provider resolution logic
+
 ## 0.4.3
 
 ### Patch Changes
