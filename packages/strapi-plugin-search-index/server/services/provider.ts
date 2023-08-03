@@ -114,7 +114,7 @@ const provider = () => ({
           .join(', ')}]`,
       );
       for (const contentType of rebuildTypes) {
-        const { name, index, prefix: idPrefix = '', fields = [] } = contentType;
+        const { name, index, prefix: idPrefix = '', fields = [], transforms } = contentType;
         strapi.log.debug(`Rebuilding search index for ${name}`);
         if (strapi.contentTypes[name]) {
           const indexName = indexPrefix + (index ? index : name);
@@ -131,7 +131,7 @@ const provider = () => ({
           await pluginInstance.createMany({
             indexName,
             data: entities.map((x) => ({
-              ...sanitize(x, fields, excludedFields),
+              ...sanitize(x, fields, excludedFields, transforms),
               id: idPrefix + x.id,
             })),
           });

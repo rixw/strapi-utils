@@ -37,7 +37,7 @@ const lifecycle = (): Lifecycle =>
       contentTypes &&
         contentTypes.forEach((contentType) => {
           strapi.log.info('Loading lifecycle methods for ', contentType);
-          const { name, index, prefix: idPrefix = '', fields = [] } = contentType;
+          const { name, index, prefix: idPrefix = '', fields = [], transforms = {} } = contentType;
 
           if (strapi.contentTypes[name]) {
             const indexName = indexPrefix + (index ? index : name);
@@ -69,7 +69,7 @@ const lifecycle = (): Lifecycle =>
                   ? provider.create({
                       indexName,
                       // @ts-ignore
-                      data: sanitize(event.result, fields, excludedFields),
+                      data: sanitize(event.result, fields, excludedFields, transforms),
                       // @ts-ignore
                       id: idPrefix + event.result.id,
                     })
@@ -90,7 +90,12 @@ const lifecycle = (): Lifecycle =>
                 checkPublicationState(event as AfterEvent)
                   ? provider.create({
                       indexName,
-                      data: sanitize((event as AfterEvent).result, fields, excludedFields),
+                      data: sanitize(
+                        (event as AfterEvent).result,
+                        fields,
+                        excludedFields,
+                        transforms,
+                      ),
                       id: idPrefix + (event as AfterEvent).result.id,
                     })
                   : provider.delete({

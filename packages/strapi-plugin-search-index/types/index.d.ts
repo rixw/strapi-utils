@@ -33,13 +33,27 @@ export type ProviderInstance = {
   clear: (params: ClearProps) => Promise<void>;
 };
 
+export type Transform = (item: object) => object;
+
+export type Transforms = {
+  [string]: Transform;
+};
+
+export type ContentType = {
+  name: string;
+  index?: string;
+  fields: string[];
+  prefix?: string;
+  transforms?: Transforms;
+};
+
 export type PluginConfig = {
   provider: string;
   providerOptions?: object;
   prefix?: string;
   excludedFields: string[];
   debug?: boolean;
-  contentTypes: Array<{ name: string; index?: string; fields: string[]; prefix?: string }>;
+  contentTypes: ContentType[];
 };
 
 export type Provider = {
