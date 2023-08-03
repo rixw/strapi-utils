@@ -1,0 +1,50 @@
+{
+  "name": "strapi-plugin-search-index",
+  "version": "0.3.8",
+  "description": "Site search engine integration plugin for Strapi",
+  "keywords": [
+    "strapi",
+    "search",
+    "algolia"
+  ],
+  "homepage": "https://github.com/rixw/strapi-utils/strapi-plugin-search",
+  "bugs": "https://github.com/rixw/strapi-utils/issues",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/rixw/strapi-utils",
+    "directory": "packages/strapi-plugin-search"
+  },
+  "license": "MIT",
+  "author": {
+    "name": "Richard Weaver",
+    "email": "richard@weaver.me.uk",
+    "url": "https://github.com/rixw"
+  },
+  "scripts": {
+    "build": "yarn clean && tsc -p tsconfig.json && node dist/setup-package.js",
+    "clean": "rm -rf dist"
+  },
+  "peerDependencies": {
+    "@strapi/strapi": "^4.11.4"
+  },
+  "devDependencies": {
+    "@strapi/typescript-utils": "^4.11.4",
+    "strapi-typed": "^1.0.16",
+    "typescript": "^5.1.6"
+  },
+  "publishConfig": {
+    "access": "public",
+    "directory": "dist"
+  },
+  "strapi": {
+    "name": "search-index",
+    "description": "Strapi plugin to index to site search engines",
+    "kind": "plugin",
+    "displayName": "Search Index"
+  },
+  "files": [
+    "./dist"
+  ],
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts"
+}
