@@ -17,21 +17,26 @@ export const sanitize = (
 ) => {
   if (!entity) return entity;
   let transformedObject = structuredClone(entity);
+
   if (transforms) {
+    strapi.log.debug(`Transforming object ${JSON.stringify(transformedObject)}`);
     Object.entries(transforms).map((transform) => {
       const [key, transformFn] = transform as [string, Transform];
       try {
         const originalValue = get(key, entity);
+        strapi.log.debug(`Transforming ${key}, original value ${originalValue}}`);
         if (originalValue) set(key, transformFn(structuredClone(originalValue)), transformedObject);
+        strapi.log.debug(`Transformed ${key}, new value ${get(key, entity)}}`);
       } catch (error) {
         strapi.log.warn(`An error occured when transforming ${key}`, error);
       }
     });
+    strapi.log.debug(`Final transformed entity ${transformedObject}`);
   }
 
   if (fields.length > 0) {
-    return pick(fields, entity);
+    return pick(fields, transformedObject);
   }
 
-  return omit(excludedFields, entity);
+  return omit(excludedFields, transformedObject);
 };
