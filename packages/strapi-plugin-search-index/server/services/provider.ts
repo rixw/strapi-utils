@@ -17,15 +17,45 @@ const provider = () => ({
    * @param {string} [pluginConfig.resolve] - Path to provider
    */
   async loadProvider(pluginConfig: PluginConfig): Promise<void> {
-    strapi.log.info('loadProvider', pluginConfig);
     pluginConfig = pluginConfig ? pluginConfig : strapi.config.get('plugin.search-index');
+    strapi.log.info('Search Index plugin loading', pluginConfig);
 
     try {
-      // Todo implement v4 package loader logic
-      const provider = (await import(pluginConfig.provider)) as Provider;
-      const providerInstance = await provider.init(pluginConfig);
+      const providerName = pluginConfig.provider || 'algolia';
+      let useProvider: Provider;
+      let modulePath: string;
 
+      try {
+        strapi.log.debug(`Loading provider ${providerName}`);
+        modulePath = require.resolve(`@strapi/provider-search-index-${providerName}`);
+        strapi.log.debug(`Provider ${providerName} (resolved to ${modulePath})`);
+      } catch (error) {
+        if (error.code === 'MODULE_NOT_FOUND') {
+          modulePath = providerName;
+          strapi.log.debug(`Provider ${providerName} (resolved to ${modulePath})`);
+        } else {
+          throw error;
+        }
+      }
+
+      try {
+        strapi.log.debug(`Importing ${providerName} from ${modulePath}`);
+        useProvider = (await import(modulePath)) as Provider;
+        strapi.log.debug(`Imported ${providerName} from ${modulePath}`);
+      } catch (error) {
+        const newError = new Error(
+          `Could not load provider ${providerName} (resolved to ${modulePath}).`,
+        );
+        newError.stack = error.stack;
+        throw newError;
+      }
+
+      strapi.log.debug(`Initialising provider ${providerName}`);
+      const providerInstance = await useProvider.init(pluginConfig);
+
+      strapi.log.debug(`Validating provider instance for ${providerName}`);
       if (validateProvider(providerInstance)) {
+        strapi.log.debug(`Validated provider instance for ${providerName}`);
         providerInstance.create = wrapMethodWithError(providerInstance.create);
         providerInstance.update = wrapMethodWithError(providerInstance.update);
         providerInstance.delete = wrapMethodWithError(providerInstance.delete);
