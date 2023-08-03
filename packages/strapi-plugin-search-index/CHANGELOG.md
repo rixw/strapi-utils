@@ -1,5 +1,11 @@
 # @rixw/strapi-plugin-search
 
+## 0.4.11
+
+### Patch Changes
+
+- ebcda1e: Bug fixing in transform processing
+
 ## 0.4.10
 
 ### Patch Changes
