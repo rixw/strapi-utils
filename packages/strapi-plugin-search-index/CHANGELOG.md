@@ -1,5 +1,11 @@
 # @rixw/strapi-plugin-search
 
+## 0.4.8
+
+### Patch Changes
+
+- 5317895: Updated import export formats
+
 ## 0.4.7
 
 ### Patch Changes
