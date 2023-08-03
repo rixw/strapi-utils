@@ -1,5 +1,13 @@
 # @rixw/strapi-provider-search-algolia
 
+## 0.4.1
+
+### Patch Changes
+
+- e967f8b: Configure provider to build into root
+- Updated dependencies [e967f8b]
+  - strapi-plugin-search-index@0.4.3
+
 ## 0.4.0
 
 ### Minor Changes

@@ -1,5 +1,11 @@
 # @rixw/strapi-plugin-search
 
+## 0.4.3
+
+### Patch Changes
+
+- e967f8b: Configure provider to build into root
+
 ## 0.4.2
 
 ### Patch Changes
