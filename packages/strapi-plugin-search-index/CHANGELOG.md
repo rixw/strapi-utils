@@ -1,5 +1,11 @@
 # @rixw/strapi-plugin-search
 
+## 0.4.5
+
+### Patch Changes
+
+- d2173fc: Add auto resolution of unscoped standard provider name
+
 ## 0.4.4
 
 ### Patch Changes
