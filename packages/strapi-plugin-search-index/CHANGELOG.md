@@ -1,5 +1,11 @@
 # @rixw/strapi-plugin-search
 
+## 0.4.0
+
+### Minor Changes
+
+- 1c9d6fd: Change to unscoped packages
+
 ## 0.3.8
 
 ### Patch Changes
