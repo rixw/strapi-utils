@@ -1,5 +1,11 @@
 # @rixw/strapi-plugin-search
 
+## 0.4.7
+
+### Patch Changes
+
+- 16865fd: Improved logging
+
 ## 0.4.6
 
 ### Patch Changes
