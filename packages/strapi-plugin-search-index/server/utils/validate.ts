@@ -51,13 +51,18 @@ const validateConfig = (config: PluginConfig) => {
  */
 const validateProvider = (provider: ProviderInstance) => {
   PROVIDER_METHODS.forEach((method) => {
-    if (typeof Object.entries(provider).find(([key]) => key === method) !== 'function') {
+    console.debug(`Validating method ${method} in provider`, provider);
+    const providerMethod = Object.entries(provider).find(([key]) => {
+      console.debug(`Validating method ${method} in provider: testing ${key} === ${method}`);
+      return key === method;
+    });
+    console.debug(`Validating ${method} found provider method`, providerMethod);
+    if (typeof providerMethod !== 'function') {
       throw new Error(
-        `Provider validation Error: Required method '${method}' isn't implemented in the provider.`,
+        `Provider validation error: Required method '${method}' isn't implemented in the provider (has type '${typeof providerMethod}').`,
       );
     }
   });
-
   return true;
 };
 

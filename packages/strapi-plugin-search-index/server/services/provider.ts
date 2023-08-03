@@ -65,6 +65,7 @@ const provider = () => ({
 
       strapi.log.debug(`Initialising provider ${providerName}`);
       const providerInstance = await useProvider.init(pluginConfig);
+      console.debug(`Imported ${providerName} from ${modulePath}`, providerInstance);
 
       strapi.log.debug(`Validating provider instance for ${providerName}`);
       if (validateProvider(providerInstance)) {

@@ -15,4 +15,4 @@ const bootstrap = async ({ strapi }: { strapi: Strapi }) => {
   }
 };
 
-export default bootstrap;
+export = bootstrap;

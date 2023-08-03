@@ -3,4 +3,4 @@
 import lifecycle from './lifecycle';
 import provider from './provider';
 
-export default { lifecycle, provider };
+export = { lifecycle, provider };
