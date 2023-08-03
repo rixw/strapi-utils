@@ -26,13 +26,25 @@ const provider = () => ({
       let modulePath: string;
 
       try {
-        strapi.log.debug(`Loading provider ${providerName}`);
+        strapi.log.debug(
+          `Loading provider ${providerName} as @strapi/provider-search-index-${providerName}`,
+        );
         modulePath = require.resolve(`@strapi/provider-search-index-${providerName}`);
-        strapi.log.debug(`Provider ${providerName} (resolved to ${modulePath})`);
       } catch (error) {
         if (error.code === 'MODULE_NOT_FOUND') {
-          modulePath = providerName;
-          strapi.log.debug(`Provider ${providerName} (resolved to ${modulePath})`);
+          try {
+            strapi.log.debug(
+              `Loading provider ${providerName} as strapi-provider-search-index-${providerName}`,
+            );
+            modulePath = require.resolve(`strapi-provider-search-index-${providerName}`);
+          } catch (innerError) {
+            if (error.code === 'MODULE_NOT_FOUND') {
+              strapi.log.debug(`Loading provider ${providerName} as ${providerName}`);
+              modulePath = providerName;
+            } else {
+              throw innerError;
+            }
+          }
         } else {
           throw error;
         }
