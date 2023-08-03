@@ -28,7 +28,7 @@ export const sanitize = (
         if (originalValue) {
           const newValue = transformFn(structuredClone(originalValue));
           strapi.log.debug(`Transformed ${key}, new value ${JSON.stringify(newValue)}}`);
-          set(key, newValue, transformedObject);
+          transformedObject = set(key, newValue, transformedObject);
           strapi.log.debug(
             `Applied transformation to ${key}, new object ${JSON.stringify(transformedObject)}}`,
           );
