@@ -24,14 +24,20 @@ export const sanitize = (
       const [key, transformFn] = transform as [string, Transform];
       try {
         const originalValue = get(key, entity);
-        strapi.log.debug(`Transforming ${key}, original value ${originalValue}}`);
-        if (originalValue) set(key, transformFn(structuredClone(originalValue)), transformedObject);
-        strapi.log.debug(`Transformed ${key}, new value ${get(key, entity)}}`);
+        strapi.log.debug(`Transforming ${key}, original value ${JSON.stringify(originalValue)}}`);
+        if (originalValue) {
+          const newValue = transformFn(structuredClone(originalValue));
+          strapi.log.debug(`Transformed ${key}, new value ${JSON.stringify(newValue)}}`);
+          set(key, newValue, transformedObject);
+          strapi.log.debug(
+            `Applied transformation to ${key}, new object ${JSON.stringify(transformedObject)}}`,
+          );
+        }
       } catch (error) {
         strapi.log.warn(`An error occured when transforming ${key}`, error);
       }
     });
-    strapi.log.debug(`Final transformed entity ${transformedObject}`);
+    strapi.log.debug(`Final transformed entity ${JSON.stringify(transformedObject)}`);
   }
 
   if (fields.length > 0) {
