@@ -4,7 +4,7 @@ import services from './server/services';
 
 export = () => ({
   bootstrap: ({ strapi }) => {
-    strapi.log.log('Top level bootstrap');
+    strapi.log.info('Search Index plugin bootstrapping...');
     return bootstrap({ strapi });
   },
   config,

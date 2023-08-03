@@ -1,16 +1,15 @@
-import { StrapiContext } from 'strapi-typed';
+import { Strapi } from '@strapi/strapi';
 
 /**
  * Bootstraps search plugin
  */
-const bootstrap = async ({ strapi }: StrapiContext) => {
-  strapi.log.log('Search Index plugin bootstrapping...');
+const bootstrap = async ({ strapi }: { strapi: Strapi }) => {
+  strapi.log.info('Search Index plugin bootstrapping...');
   try {
     const search = strapi.plugin('search-index');
-    console.log('search-index bootstrap search', search);
     await search.service('provider').loadProvider();
     await search.service('lifecycle').loadLifecycleMethods();
-    strapi.log.log('Search Index plugin bootstrapped');
+    strapi.log.info('Search Index plugin bootstrapped');
   } catch (error) {
     strapi.log.error(`Search Index plugin bootstrap failed. ${(error as Error).message}`);
   }

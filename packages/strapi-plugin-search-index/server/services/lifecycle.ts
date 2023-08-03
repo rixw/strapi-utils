@@ -25,8 +25,7 @@ const lifecycle = (): Lifecycle =>
      * Load provider methods into lifecycles
      */
     async loadLifecycleMethods() {
-      strapi.log.log('Loading lifecycle methods...');
-      console.log('Loading lifecycle methods...');
+      strapi.log.info('Loading lifecycle methods...');
       const provider = strapi.plugin('search-index').provider;
       const {
         excludedFields = [],
@@ -37,15 +36,14 @@ const lifecycle = (): Lifecycle =>
       // Loop over configured contentTypes in ./config/plugins.js
       contentTypes &&
         contentTypes.forEach((contentType) => {
-          strapi.log.log('Loading lifecycle methods for content type:', contentType);
-          console.log('Loading lifecycle methods for content type:', contentType);
+          strapi.log.info('Loading lifecycle methods for ', contentType);
           const { name, index, prefix: idPrefix = '', fields = [] } = contentType;
 
           if (strapi.contentTypes[name]) {
             const indexName = indexPrefix + (index ? index : name);
 
             const checkPublicationState = (event: AfterEvent) => {
-              strapi.log.log('checkPublicationState', event);
+              strapi.log.info('checkPublicationState', event);
               if (
                 event.result &&
                 has('publishedAt', event.result) &&
@@ -66,7 +64,7 @@ const lifecycle = (): Lifecycle =>
               models: [name],
 
               async afterCreate(event: Event) {
-                strapi.log.log('afterCreate', event);
+                strapi.log.info('afterCreate', event);
                 checkPublicationState(event as AfterEvent)
                   ? provider.create({
                       indexName,
@@ -88,7 +86,7 @@ const lifecycle = (): Lifecycle =>
               // },
 
               async afterUpdate(event) {
-                strapi.log.log('afterUpdate', event);
+                strapi.log.info('afterUpdate', event);
                 checkPublicationState(event as AfterEvent)
                   ? provider.create({
                       indexName,
@@ -111,7 +109,7 @@ const lifecycle = (): Lifecycle =>
               // },
 
               async afterDelete(event) {
-                strapi.log.log('afterDelete', event);
+                strapi.log.info('afterDelete', event);
                 provider.delete({ indexName, id: idPrefix + (event as AfterEvent).result.id });
               },
 

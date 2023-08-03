@@ -17,7 +17,7 @@ const provider = () => ({
    * @param {string} [pluginConfig.resolve] - Path to provider
    */
   async loadProvider(pluginConfig: PluginConfig): Promise<void> {
-    strapi.log.log('loadProvider', pluginConfig);
+    strapi.log.info('loadProvider', pluginConfig);
     pluginConfig = pluginConfig ? pluginConfig : strapi.config.get('plugin.search-index');
 
     try {
@@ -52,7 +52,7 @@ const provider = () => ({
    * @param {object} parameters - Parameters to pass to findMany
    */
   async rebuild(specificTypes: string[], parameters: object) {
-    strapi.log.log('rebuild', specificTypes, parameters);
+    strapi.log.info('rebuild', specificTypes, parameters);
     strapi.log.info('Rebuilding search indexes...');
     try {
       const {
