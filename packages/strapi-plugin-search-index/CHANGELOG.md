@@ -1,5 +1,11 @@
 # @rixw/strapi-plugin-search
 
+## 0.5.0
+
+### Minor Changes
+
+- 4ee5933: Refactor provider API and implement rebuild API
+
 ## 0.4.13
 
 ### Patch Changes
