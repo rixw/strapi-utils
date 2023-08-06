@@ -1,5 +1,11 @@
 # @rixw/strapi-plugin-search
 
+## 0.5.3
+
+### Patch Changes
+
+- f67a453: Reconfigure content-api routes
+
 ## 0.5.2
 
 ### Patch Changes
