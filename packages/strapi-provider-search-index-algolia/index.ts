@@ -1,4 +1,5 @@
 import algoliasearch, { SearchClient } from 'algoliasearch';
+import { omit } from 'lodash/fp';
 import {
   ClearProps,
   CreateManyProps,
@@ -62,23 +63,21 @@ export = {
       /**
        * Creates the entity on a index
        *
-       * @param {object} params - Paramaters
+       * @param {CreateProps} params - Paramaters
        * @param {string} params.indexName - Name of the index
-       * @param {object} params.data - Data of the to be created entry
-       * @param {string} [params.id] - Id used for identification of the entry
-       * @returns {Promise<SaveObjectResponse>} Promise with save task
+       * @param {SanitizedEntity} params.data - Data of the to be created entry
+       * @returns {Promise<void>} Promise with save task
        */
-      create({ indexName, data, id }: CreateProps): Promise<void> {
+      create({ indexName, data }: CreateProps): Promise<void> {
+        const objectID = data.objectId;
         return client
           .initIndex(indexName)
-          .saveObject({ objectID: id || data.id, ...data })
+          .saveObject({ objectID, ...omit('objectId', data) })
           .then(
             () =>
               debug &&
               strapi.log.debug(
-                `Algolia provider: Created entry with objectID '${
-                  id || data.id
-                }' on index '${indexName}'.`,
+                `Algolia provider: Created entry with objectID '${objectID}' on index '${indexName}'.`,
               ),
           )
           .catch((error) => {
@@ -89,23 +88,21 @@ export = {
       /**
        * Updates the entity on a index
        *
-       * @param {object} params - Paramaters
+       * @param {CreateProps} params - Paramaters
        * @param {string} params.indexName - Name of the index
-       * @param {object} params.data - Data of the to be updated entry
-       * @param {string} [params.id] - Id used for identification of the entry
-       * @returns {Promise<void>} Promise with update task
+       * @param {SanitizedEntity} params.data - Data of the to be created entry
+       * @returns {Promise<void>} Promise with save task
        */
-      update({ indexName, data, id }: CreateProps) {
+      update({ indexName, data }: CreateProps) {
+        const objectID = data.objectId;
         return client
           .initIndex(indexName)
-          .partialUpdateObject({ objectID: id || data.id, ...data }, { createIfNotExists: true })
+          .partialUpdateObject({ objectID, ...omit('objectId', data) }, { createIfNotExists: true })
           .then(
             () =>
               debug &&
               strapi.log.debug(
-                `Algolia provider: Updated entry with objectID '${
-                  id || data.id
-                }' on index '${indexName}'.`,
+                `Algolia provider: Updated entry with objectID '${objectID}' on index '${indexName}'.`,
               ),
           )
           .catch((error) => {
@@ -118,18 +115,18 @@ export = {
        *
        * @param {object} params - Paramaters
        * @param {string} params.indexName - Name of the index
-       * @param {string} params.id - Id used for identification of the entry
+       * @param {string} params.objectId - Id used for identification of the entry
        * @returns {Promise<algoliasearch.DeleteResponse>} Promise with delete task
        */
-      delete({ indexName, id }: DeleteProps) {
+      delete({ indexName, objectId }: DeleteProps) {
         return client
           .initIndex(indexName)
-          .deleteObject(id)
+          .deleteObject(objectId)
           .then(
             () =>
               debug &&
               strapi.log.debug(
-                `Algolia provider: Delete entry with objectID '${id}' from index '${indexName}'.`,
+                `Algolia provider: Delete entry with objectID '${objectId}' from index '${indexName}'.`,
               ),
           )
           .catch((error) => {
@@ -194,18 +191,18 @@ export = {
        *
        * @param {object} params - Paramaters
        * @param {string} params.indexName - Name of the index
-       * @param {Array<string>} params.ids - Ids used for identification of the entries
+       * @param {Array<string>} params.objectIds - Ids used for identification of the entries
        * @returns {Promise<algoliasearch.ChunkedBatchResponse>} Promise with chunked task
        */
-      deleteMany({ indexName, ids }: DeleteManyProps) {
+      deleteMany({ indexName, objectIds }: DeleteManyProps) {
         return client
           .initIndex(indexName)
-          .deleteObjects(ids)
+          .deleteObjects(objectIds)
           .then(
             () =>
               debug &&
               strapi.log.debug(
-                `Algolia provider: Deleted ${ids.length} entries from index '${indexName}'.`,
+                `Algolia provider: Deleted ${objectIds.length} entries from index '${indexName}'.`,
               ),
           )
           .catch((error) => {

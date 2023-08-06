@@ -20,16 +20,28 @@
     "email": "richard@weaver.me.uk",
     "url": "https://github.com/rixw"
   },
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "files": [
+    "./dist"
+  ],
   "scripts": {
     "build": "yarn clean && tsc -p tsconfig.json && node dist/setup-package.js",
     "clean": "rm -rf dist"
   },
-  "peerDependencies": {
-    "@strapi/strapi": "^4.11.4"
+  "dependencies": {
+    "http-errors": "2.0.0",
+    "lodash": "4.17.21"
   },
   "devDependencies": {
     "@strapi/typescript-utils": "^4.11.4",
+    "@types/http-errors": "2.0.1",
+    "@types/koa": "2.13.8",
+    "@types/koa-bodyparser": "4.3.10",
     "typescript": "^5.1.6"
+  },
+  "peerDependencies": {
+    "@strapi/strapi": "^4.11.4"
   },
   "publishConfig": {
     "access": "public",
@@ -40,10 +52,5 @@
     "description": "Strapi plugin to index to site search engines",
     "kind": "plugin",
     "displayName": "Search Index"
-  },
-  "files": [
-    "./dist"
-  ],
-  "main": "./dist/index.js",
-  "types": "./dist/index.d.ts"
+  }
 }

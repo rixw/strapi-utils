@@ -1,7 +1,76 @@
-import { EntityProps, PluginConfig, Provider } from '../../types';
+import { ProviderInstance } from 'strapi-plugin-search-index';
+import {
+  ContentType,
+  FindManyParameters,
+  PluginConfig,
+  PopulateParameter,
+  Provider,
+  StrapiResponse,
+  StrapiWrappedEntity,
+} from '../../types';
 import { wrapMethodWithError } from '../utils/error';
 import { sanitize } from '../utils/sanitize';
 import { validateProvider } from '../utils/validate';
+
+const PAGE_SIZE = 100;
+
+export const getFieldsParameter = (contentType: ContentType): string[] | undefined => {
+  if (contentType.fields === '*' || contentType.fields.length > 0) return undefined;
+  strapi.log.debug(`Getting field parameters for to [${contentType.fields.join(', ')}]`);
+  const result = [
+    ...contentType.fields,
+    contentType.fields.includes('id') ? undefined : 'id',
+  ].filter((x) => !!x);
+  return result;
+};
+
+export const getPopulateParameter = (fieldParameter: string[] | null): PopulateParameter => {
+  strapi.log.debug(
+    `Getting poulate parameter for [${fieldParameter ? fieldParameter.join(', ') : '*'}]`,
+  );
+  if (!fieldParameter) return '*';
+  const result: { [key: string]: boolean } = {};
+  fieldParameter.forEach((x) => (result.populate[x] = true));
+  return result;
+};
+
+const getPageOfEntities = async (
+  contentType: ContentType,
+  page: number,
+  pageSize: number,
+): Promise<StrapiResponse> => {
+  let parameters: FindManyParameters = {
+    populate: '*',
+    publicationState: 'live',
+    page,
+    pageSize,
+  };
+  strapi.log.debug(`Querying page ${page} size ${pageSize} of ${contentType.name} entities`);
+  const fields = getFieldsParameter(contentType);
+  if (fields) {
+    parameters.fields = fields;
+    parameters.populate = getPopulateParameter(fields);
+  }
+  strapi.log.debug(`Find many parameters ${JSON.stringify(parameters)}`);
+  return strapi.entityService.findMany(contentType.name, parameters);
+};
+
+const getAllEntities = async (contentType: ContentType): Promise<StrapiWrappedEntity[]> => {
+  strapi.log.debug(`Retrieving all ${contentType.name} entities`);
+  let result = [];
+  let page = 1;
+  let totalPages = 1;
+  do {
+    strapi.log.debug(`Retrieving page ${page} (size ${PAGE_SIZE}) of ${contentType.name} entities`);
+    const pageOfEntities = await getPageOfEntities(contentType, page, PAGE_SIZE);
+    strapi.log.debug(`Retrieved ${pageOfEntities.data.length} ${contentType.name} entities`);
+    result.push(...pageOfEntities.data);
+    totalPages = pageOfEntities.meta.pagination.pageCount;
+    page += 1;
+  } while (page <= totalPages);
+  strapi.log.debug(`Retrieved a total of ${result.length} ${contentType.name} entities`);
+  return result;
+};
 
 /**
  * Gets provider service
@@ -38,7 +107,7 @@ const provider = () => ({
             );
             modulePath = require.resolve(`strapi-provider-search-index-${providerName}`);
           } catch (innerError) {
-            if (error.code === 'MODULE_NOT_FOUND') {
+            if (innerError.code === 'MODULE_NOT_FOUND') {
               strapi.log.debug(`Loading provider ${providerName} as ${providerName}`);
               modulePath = providerName;
             } else {
@@ -92,58 +161,88 @@ const provider = () => ({
   /**
    * Clears and then re-populates search indexes by calling findMany on the content type
    *
-   * @param {Array<string>} specificTypes - The type names to re-populate the indexes for; if null, re-populates all types; if empty, re-populates no types
+   * @param {Array<string>} contentTypes - The type names to re-populate the indexes for; if null, re-populates all types; if empty, re-populates no types
    * @param {object} parameters - Parameters to pass to findMany
    */
-  async rebuild(specificTypes: string[], parameters: object) {
-    strapi.log.info('rebuild', specificTypes, parameters);
-    strapi.log.info('Rebuilding search indexes...');
+  async rebuild(types: string[] | '*') {
+    strapi.log.info(`Rebuilding search index: [${types === '*' ? '*' : (types || []).join(', ')}]`);
     try {
-      const {
-        excludedFields = [],
-        prefix: indexPrefix = '',
-        contentTypes,
-      } = strapi.config.get('plugin.search-index') as PluginConfig;
-      const pluginInstance = strapi.plugin('search-index').provider;
-      const rebuildTypes = contentTypes.filter(
-        (contentType) => !specificTypes || specificTypes.includes(contentType.name),
+      const { contentTypes } = strapi.config.get('plugin.search-index') as PluginConfig;
+      strapi.log.debug(
+        `Rebuild: config content types [${contentTypes.map((x) => x.name).join(', ')}]`,
+      );
+      const specifiedTypes = contentTypes.filter(
+        (contentType) => types === '*' || types.includes(contentType.name),
       );
       strapi.log.debug(
-        `Rebuilding search indexes for ${rebuildTypes?.length || 0} types [${(rebuildTypes || [])
-          .map((type) => type.name)
-          .join(', ')}]`,
+        `Rebuild: specified content types [${contentTypes.map((x) => x.name).join(', ')}]`,
       );
-      for (const contentType of rebuildTypes) {
-        const { name, index, prefix: idPrefix = '', fields = [], transforms } = contentType;
-        strapi.log.debug(`Rebuilding search index for ${name}`);
-        if (strapi.contentTypes[name]) {
-          const indexName = indexPrefix + (index ? index : name);
+      const indexNames = specifiedTypes.map((type) => type.index);
+      strapi.log.debug(`Rebuild: index names [${indexNames.join(', ')}]`);
+      const uniqueIndexNames = indexNames.filter((n, i) => indexNames.indexOf(n) === i);
+      strapi.log.debug(`Rebuild: unique index names [${indexNames.join(', ')}]`);
+      const indexTypeMap = new Map<string, ContentType[]>();
+      uniqueIndexNames.forEach((indexName) => {
+        indexTypeMap.set(
+          indexName,
+          contentTypes.filter((type) => type.index === indexName),
+        );
+      });
+      const includedContentTypes = [...indexTypeMap].reduce((acc, [indexName, types]) => {
+        acc.push(...types);
+        return acc;
+      }, []);
+      strapi.log.debug(
+        `Rebuild: included content types [${includedContentTypes.map((x) => x.name).join(', ')}]`,
+      );
+      const invalidContentTypes = includedContentTypes.filter(
+        (x) => strapi.contentTypes[x.name] === undefined,
+      );
+      strapi.log.debug(
+        `Rebuild: invalid content types [${invalidContentTypes.map((x) => x.name).join(', ')}]`,
+      );
+      if (invalidContentTypes.length > 0) {
+        throw new Error(
+          `Unrecognised content-types in config: [${invalidContentTypes.join(', ')}]`,
+        );
+      }
+
+      strapi.log.info(
+        `Rebuilding search indexes for ${uniqueIndexNames.length} indexes [${uniqueIndexNames.join(
+          ', ',
+        )}] incorporating ${includedContentTypes.length} content-types [${includedContentTypes.join(
+          ', ',
+        )}]`,
+      );
+
+      const pluginInstance = strapi.plugin('search-index').provider as ProviderInstance;
+      for (const index of indexTypeMap) {
+        const [indexName, indexContentTypes] = index;
+        strapi.log.debug(`Clearing search index ${indexName}`);
+        await pluginInstance.clear({ indexName });
+        for (const contentType of indexContentTypes) {
+          const { name } = contentType;
+          strapi.log.debug(`Rebuilding search index ${indexName} for content-type ${name}`);
+          const strapiWrappedEntities = await getAllEntities(contentType);
           strapi.log.debug(
-            `Clearing search index for ${contentType.name} with parameters ${JSON.stringify(
-              parameters,
-            )}`,
+            `Adding ${strapiWrappedEntities.length} ${name} entities to search index ${indexName}`,
           );
-          await pluginInstance.clear({ indexName });
-          const entities = (await strapi.entityService.findMany(name, parameters)) as EntityProps[]; // Potentially expensive, TODO: paginate
-          strapi.log.debug(
-            `Rebuilding search index for ${entities.length} entities in ${contentType.name}`,
+          const sanitizedEntities = strapiWrappedEntities.map((x) =>
+            sanitize(contentType, {
+              id: x.id,
+              ...x.data,
+            }),
           );
           await pluginInstance.createMany({
             indexName,
-            data: entities.map((x) => ({
-              ...sanitize(x, fields, excludedFields, transforms),
-              id: idPrefix + x.id,
-            })),
+            data: sanitizedEntities,
           });
-        } else {
-          strapi.log.error(
-            `Search plugin rebuild failed: Search plugin could not rebuild index for '${name}' as it doesn't exist.`,
-          );
         }
       }
     } catch (error) {
       strapi.log.error(`Search plugin rebuild failed: ${(error as Error).message}`);
     }
+    strapi.log.info('Rebuilding search indexes complete');
   },
 });
 
