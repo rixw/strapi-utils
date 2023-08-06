@@ -1,5 +1,11 @@
 # @rixw/strapi-plugin-search
 
+## 0.5.1
+
+### Patch Changes
+
+- f2c1b3d: Correctly export controllers and routes
+
 ## 0.5.0
 
 ### Minor Changes
