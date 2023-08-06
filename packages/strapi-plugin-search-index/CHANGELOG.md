@@ -1,5 +1,11 @@
 # @rixw/strapi-plugin-search
 
+## 0.5.2
+
+### Patch Changes
+
+- 515e3c7: Fix route export
+
 ## 0.5.1
 
 ### Patch Changes
