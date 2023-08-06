@@ -11,5 +11,6 @@ export = () => {
     controllers,
     routes,
     services,
+    type: 'content-api',
   };
 };
