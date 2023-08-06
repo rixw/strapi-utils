@@ -1,5 +1,12 @@
 # @rixw/strapi-plugin-search
 
+## 0.5.6
+
+### Patch Changes
+
+- e552d73: Improve logging of plugin config
+- f251cdb: Fix plugin config reference
+
 ## 0.5.5
 
 ### Patch Changes
