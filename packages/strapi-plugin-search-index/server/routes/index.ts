@@ -1,5 +1,5 @@
-import contentApi from './content-api';
+import content from './content-api';
 
 export default {
-  'content-api': contentApi,
+  'content-api': content,
 };

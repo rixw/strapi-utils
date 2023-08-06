@@ -1,5 +1,5 @@
 import searchIndex from './search-index';
 
 export default {
-  searchIndex,
+  'search-index': searchIndex,
 };

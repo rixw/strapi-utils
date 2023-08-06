@@ -1,9 +1,6 @@
 import { Strapi } from '@strapi/strapi';
-import { sanitize } from '@strapi/utils';
 import { Request } from 'koa';
 import createError from 'http-errors';
-
-const { contentAPI } = sanitize;
 
 export type RebuildPayload = {
   contentTypes: string[];
