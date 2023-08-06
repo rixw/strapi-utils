@@ -1,5 +1,11 @@
 # @rixw/strapi-plugin-search
 
+## 0.5.4
+
+### Patch Changes
+
+- 20ccb49: Update route and controller naming
+
 ## 0.5.3
 
 ### Patch Changes
