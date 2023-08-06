@@ -1,5 +1,16 @@
 # @rixw/strapi-provider-search-algolia
 
+## 0.5.0
+
+### Minor Changes
+
+- 4ee5933: Refactor provider API and implement rebuild API
+
+### Patch Changes
+
+- Updated dependencies [4ee5933]
+  - strapi-plugin-search-index@0.5.0
+
 ## 0.4.2
 
 ### Patch Changes
