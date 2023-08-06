@@ -1,7 +1,5 @@
-export default [
-  {
-    method: 'POST',
-    path: '/search-index/rebuild',
-    handler: 'search-index.rebuild',
-  },
-];
+import contentApi from './content-api';
+
+export default {
+  'content-api': contentApi,
+};
