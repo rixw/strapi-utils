@@ -59,10 +59,10 @@ export class StrapiClient {
    * @param params - The params to pass to the Strapi API
    * @returns The endpoint URL
    */
-  public getEndpoint(entityName: string, id?: number, params?: StrapiParams): string {
+  public getEndpoint(entityName: string, id?: number, params?: StrapiParams, isSingleType?: boolean): string {
     const contentType = this.entityMap.get(entityName);
     const query = qs.stringify(params, { addQueryPrefix: true, encodeValuesOnly: true });
-    return this.getUrl(`/${contentType?.pluralName}${id ? `/${id}` : ''}${query}`);
+    return this.getUrl(`/${isSingleType ? contentType?.singularName : contentType?.pluralName}${id ? `/${id}` : ''}${query}`);
   }
 
   /**
@@ -102,9 +102,10 @@ export class StrapiClient {
     id?: number,
     data?: any,
     params?: StrapiParams,
+    isSingleType?: boolean,
   ): Promise<StrapiResponse> {
     try {
-      const url = this.getEndpoint(entityName, id, params);
+      const url = this.getEndpoint(entityName, id, params, isSingleType);
       const headers = this.opts.jwt
         ? {
             Authorization: `Bearer ${this.opts.jwt}`,
@@ -134,6 +135,21 @@ export class StrapiClient {
         throw e.response.data;
       }
     }
+  }
+
+  /**
+   * Returns the only instance of the single type of entity
+   * @param entityName - The singular name of the entity you want to query
+   * @param params - The params to pass to the Strapi API
+   * @returns The only instance of the single type of entity
+   */
+
+  async fetchSingle<T extends StrapiEntity>(
+    entityName: string,
+    params?: StrapiParams,
+  ): Promise<T> {
+    const json = await this.fetchRawResult('get', entityName, undefined, undefined, params, true);
+    return normaliseStrapiResponseItem<T>(json);
   }
 
   /**
