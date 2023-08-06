@@ -1,5 +1,11 @@
 # @rixw/strapi-plugin-search
 
+## 0.5.5
+
+### Patch Changes
+
+- 8076d88: Remove unnecessary type property from server
+
 ## 0.5.4
 
 ### Patch Changes
