@@ -9,6 +9,7 @@ export type RebuildPayload = {
 export default ({ strapi }: { strapi: Strapi }) => ({
   rebuild(ctx) {
     strapi.log.debug('Rebuild endpoint called');
+    console.debug('Search Index config', strapi.plugins['search-index'].config);
     // Check that the plugin is enabled
     const enabled = strapi.plugins['search-index'].config.enableRebuildEndpoint || false;
     if (!enabled) {

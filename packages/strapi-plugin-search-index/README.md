@@ -45,7 +45,7 @@ Then configure the plugin in your Strapi application:
       apiKey: env('ALGOLIA_PROVIDER_ADMIN_API_KEY'),
       applicationId: env('ALGOLIA_PROVIDER_APPLICATION_ID'),
     },
-    enableReindexEndpoint: true
+    enableRebuildEndpoint: true, // Unspecified or false to disable the rebuild endpoint
     contentTypes: [ // An array of content-types to index
       {
         name: 'api::page.page', // The fully qualified Strapi content-type name
@@ -140,7 +140,7 @@ The plugin creates a `search-index` controller with a `rebuild` endpoint. This i
 
 The endpoint acknowledges that rebuilding has begun; the actual rebuild job is performed asynchronously.
 
-This endpoint is enabled by setting `enableReindexEndpoint` true in your config - by default, the endpoint is turned off and returns a 403 error. If enabled, you can control access to this endpoint using Strapi's Users & Permissions access control.
+This endpoint is enabled by setting `enableRebuildEndpoint` true in your config - by default, the endpoint is turned off and returns a 403 error. If enabled, you can control access to this endpoint using Strapi's Users & Permissions access control.
 
 ### Programmatic rebuilds
 
