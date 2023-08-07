@@ -5,7 +5,6 @@ import {
   PluginConfig,
   PopulateParameter,
   Provider,
-  StrapiResponse,
   StrapiWrappedEntity,
 } from '../../types';
 import { wrapMethodWithError } from '../utils/error';
@@ -38,7 +37,7 @@ const getPageOfEntities = async (
   contentType: ContentType,
   page: number,
   pageSize: number,
-): Promise<StrapiResponse> => {
+): Promise<StrapiWrappedEntity[]> => {
   let parameters: FindManyParameters = {
     populate: '*',
     publicationState: 'live',
@@ -59,15 +58,16 @@ const getAllEntities = async (contentType: ContentType): Promise<StrapiWrappedEn
   strapi.log.debug(`Retrieving all ${contentType.name} entities`);
   let result = [];
   let page = 1;
-  let totalPages = 1;
+  let fullPage = false;
   do {
     strapi.log.debug(`Retrieving page ${page} (size ${PAGE_SIZE}) of ${contentType.name} entities`);
     const pageOfEntities = await getPageOfEntities(contentType, page, PAGE_SIZE);
-    strapi.log.debug(`Retrieved ${pageOfEntities.data.length} ${contentType.name} entities`);
-    result.push(...pageOfEntities.data);
-    totalPages = pageOfEntities.meta.pagination.pageCount;
+    console.debug('Page of entities', pageOfEntities);
+    strapi.log.debug(`Retrieved ${pageOfEntities.length} ${contentType.name} entities`);
+    result.push(...pageOfEntities);
+    fullPage = pageOfEntities.length === PAGE_SIZE;
     page += 1;
-  } while (page <= totalPages);
+  } while (fullPage);
   strapi.log.debug(`Retrieved a total of ${result.length} ${contentType.name} entities`);
   return result;
 };
