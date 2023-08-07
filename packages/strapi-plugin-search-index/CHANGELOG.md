@@ -1,5 +1,11 @@
 # @rixw/strapi-plugin-search
 
+## 0.5.9
+
+### Patch Changes
+
+- 0fea7d7: Debugging controller service call
+
 ## 0.5.8
 
 ### Patch Changes
