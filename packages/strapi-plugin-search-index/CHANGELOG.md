@@ -1,5 +1,11 @@
 # @rixw/strapi-plugin-search
 
+## 0.5.10
+
+### Patch Changes
+
+- db12328: Fix plugin reference in controller
+
 ## 0.5.9
 
 ### Patch Changes
