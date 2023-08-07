@@ -1,5 +1,11 @@
 # @rixw/strapi-plugin-search
 
+## 0.5.11
+
+### Patch Changes
+
+- 9270c78: Fix bug in how findMany response is handled
+
 ## 0.5.10
 
 ### Patch Changes
