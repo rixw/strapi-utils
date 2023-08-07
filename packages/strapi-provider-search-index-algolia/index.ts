@@ -143,11 +143,13 @@ export = {
        * @returns {Promise<algoliasearch.ChunkedBatchResponse>} Promise with chunked task
        */
       createMany({ indexName, data }: CreateManyProps) {
-        data = data.map((entry) => ({ objectID: entry.id, ...entry }));
-
+        const mappedData = data.map((entry) => ({
+          objectID: entry.objectId,
+          ...omit('objectId', entry),
+        }));
         return client
           .initIndex(indexName)
-          .saveObjects(data)
+          .saveObjects(mappedData)
           .then(
             () =>
               debug &&
