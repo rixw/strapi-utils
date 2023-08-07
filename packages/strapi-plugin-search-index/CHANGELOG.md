@@ -1,5 +1,11 @@
 # @rixw/strapi-plugin-search
 
+## 0.5.8
+
+### Patch Changes
+
+- ba8006b: Fix bug in how rebuild service is called in controller
+
 ## 0.5.7
 
 ### Patch Changes
