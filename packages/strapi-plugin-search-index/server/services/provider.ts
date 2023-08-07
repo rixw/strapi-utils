@@ -5,7 +5,7 @@ import {
   PluginConfig,
   PopulateParameter,
   Provider,
-  StrapiWrappedEntity,
+  StrapiEntity,
 } from '../../types';
 import { wrapMethodWithError } from '../utils/error';
 import { sanitize } from '../utils/sanitize';
@@ -37,7 +37,7 @@ const getPageOfEntities = async (
   contentType: ContentType,
   page: number,
   pageSize: number,
-): Promise<StrapiWrappedEntity[]> => {
+): Promise<StrapiEntity[]> => {
   let parameters: FindManyParameters = {
     populate: '*',
     publicationState: 'live',
@@ -54,7 +54,7 @@ const getPageOfEntities = async (
   return strapi.entityService.findMany(contentType.name, parameters);
 };
 
-const getAllEntities = async (contentType: ContentType): Promise<StrapiWrappedEntity[]> => {
+const getAllEntities = async (contentType: ContentType): Promise<StrapiEntity[]> => {
   strapi.log.debug(`Retrieving all ${contentType.name} entities`);
   let result = [];
   let page = 1;
@@ -223,16 +223,13 @@ const provider = () => ({
         for (const contentType of indexContentTypes) {
           const { name } = contentType;
           strapi.log.debug(`Rebuilding search index ${indexName} for content-type ${name}`);
-          const strapiWrappedEntities = await getAllEntities(contentType);
+          const entities = await getAllEntities(contentType);
+          console.debug('entities', entities);
           strapi.log.debug(
-            `Adding ${strapiWrappedEntities.length} ${name} entities to search index ${indexName}`,
+            `Adding ${entities.length} ${name} entities to search index ${indexName}`,
           );
-          const sanitizedEntities = strapiWrappedEntities.map((x) =>
-            sanitize(contentType, {
-              id: x.id,
-              ...x.data,
-            }),
-          );
+          const sanitizedEntities = entities.map((x) => sanitize(contentType, x));
+          console.debug('sanitizedEntities', sanitizedEntities);
           await pluginInstance.createMany({
             indexName,
             data: sanitizedEntities,
