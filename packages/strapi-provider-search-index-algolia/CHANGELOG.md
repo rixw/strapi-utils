@@ -1,5 +1,13 @@
 # @rixw/strapi-provider-search-algolia
 
+## 0.5.1
+
+### Patch Changes
+
+- 12073a1: Fix bug in unwrapping findMany results and objectID renaming in provider
+- Updated dependencies [12073a1]
+  - strapi-plugin-search-index@0.5.12
+
 ## 0.5.0
 
 ### Minor Changes

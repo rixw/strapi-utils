@@ -1,5 +1,11 @@
 # @rixw/strapi-plugin-search
 
+## 0.5.12
+
+### Patch Changes
+
+- 12073a1: Fix bug in unwrapping findMany results and objectID renaming in provider
+
 ## 0.5.11
 
 ### Patch Changes
