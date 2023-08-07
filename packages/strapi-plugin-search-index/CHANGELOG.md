@@ -1,5 +1,11 @@
 # @rixw/strapi-plugin-search
 
+## 0.5.7
+
+### Patch Changes
+
+- f251cdb: Fix plugin config reference
+
 ## 0.5.6
 
 ### Patch Changes
