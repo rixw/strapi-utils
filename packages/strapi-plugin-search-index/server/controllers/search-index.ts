@@ -33,7 +33,8 @@ export default ({ strapi }: { strapi: Strapi }) => ({
 
     // Call the rebuild function - this is async but we won't await it
     try {
-      strapi.plugin['search-index'].services['provider'].rebuild(payload.contentTypes, {});
+      strapi.log.debug('Calling in to rebuild service');
+      strapi.plugin['search-index'].service('provider').rebuild(payload.contentTypes, {});
     } catch (error) {
       throw createError.InternalServerError('Something went wrong');
     }
