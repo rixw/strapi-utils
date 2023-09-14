@@ -1,0 +1,55 @@
+{
+  "name": "strapi-plugin-populate-deeply",
+  "version": "0.9.0",
+  "description": "An updated, Typescript-based version of populate-deep",
+  "homepage": "https://github.com/rixw/strapi-utils/strapi-plugin-populate-deeply",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/rixw/strapi-utils",
+    "directory": "packages/strapi-plugin-populate-deeply"
+  },
+  "license": "MIT",
+  "author": {
+    "name": "Richard Weaver",
+    "email": "richard@weaver.me.uk",
+    "url": "https://github.com/rixw"
+  },
+  "maintainers": [
+    {
+      "name": "Richard Weaver",
+      "email": "richard@weaver.me.uk",
+      "url": "https://github.com/rixw"
+    }
+  ],
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "files": [
+    "./dist"
+  ],
+  "scripts": {
+    "build": "yarn clean && tsc -p tsconfig.json && node dist/setup-package.js",
+    "clean": "rm -rf dist",
+    "develop": "tsc -p tsconfig.server.json -w"
+  },
+  "dependencies": {
+    "@strapi/helper-plugin": "^4.13.1",
+    "lodash": "4.17.21",
+    "prop-types": "^15.7.2"
+  },
+  "devDependencies": {
+    "@strapi/typescript-utils": "^4.13.1",
+    "typescript": "^5.2.2"
+  },
+  "peerDependencies": {
+    "@strapi/strapi": "^4.13.1"
+  },
+  "publishConfig": {
+    "access": "public",
+    "directory": "dist"
+  },
+  "strapi": {
+    "name": "populate-deeply",
+    "description": "An updated, Typescript-based version of populate-deep",
+    "kind": "plugin"
+  }
+}
