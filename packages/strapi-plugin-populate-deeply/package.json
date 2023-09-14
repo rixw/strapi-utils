@@ -1,6 +1,6 @@
 {
   "name": "strapi-plugin-populate-deeply",
-  "version": "0.9.0",
+  "version": "0.9.1",
   "description": "An updated, Typescript-based version of populate-deep",
   "homepage": "https://github.com/rixw/strapi-utils/strapi-plugin-populate-deeply",
   "repository": {
