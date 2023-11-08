@@ -104,8 +104,11 @@ const page = await client.fetchById<Page>('page', 1);
   baseURL: 'https://example.com/api',
 
   // An array of the content types in your API. This is used to map the UID of
-  // the type to singular and plural names for building the API URLs
-  contentTypes: ['page', 'post'],  // The singular name of the content types
+  // the type to singular and plural names for building the API URLs.
+  // Can be either simple singular names (in which case the UID is assumed to be
+  // `api::entity.entity`) or a fully qualified Strapi entity id (e.g.
+  // for a plugin, such as `plugin::users-permissions.user`)
+  contentTypes: ['page', 'post', 'plugin::users-permissions.user'],
 
   // A JWT token to use for authentication. You can provide either Strapi's
   // long-lived API Tokens or, if you've cached a short-term JWT token from the

@@ -16,6 +16,15 @@ import {
 } from '../types';
 import { normaliseStrapiResponseArray, normaliseStrapiResponseItem } from '../normalise';
 
+const isFullyQualifiedContentType = (contentType: string): boolean =>
+  /^.+\:\:.+\..+$/.test(contentType || '');
+
+const getContentyTypeId = (contentType: string): string =>
+  isFullyQualifiedContentType(contentType) ? contentType : `api::${contentType}.${contentType}`;
+
+const getSingularName = (contentType: string): string =>
+  isFullyQualifiedContentType(contentType) ? contentType.split('.')?.slice(-1)?.[0] : contentType;
+
 export class StrapiClient {
   opts: StrapiClientOptions;
   readonly entityMap: Map<string, StrapiContentType>;
@@ -37,9 +46,10 @@ export class StrapiClient {
     this.opts = { ...defaultOptions, ...options };
     this.entityMap = new Map();
     this.opts?.contentTypes?.forEach((contentType) => {
-      const id = `api::${contentType}.${contentType}`;
-      const pluralName = pluralize(contentType);
-      this.entityMap.set(contentType, { id, singularName: contentType, pluralName });
+      const id = getContentyTypeId(contentType);
+      const singularName = getSingularName(contentType);
+      const pluralName = pluralize(singularName);
+      this.entityMap.set(singularName, { id, singularName, pluralName });
     });
     this.axiosInstance = this.opts.maxRequestsPerSecond
       ? rateLimit(axios.create(this.opts.axiosConfig), {
@@ -59,10 +69,19 @@ export class StrapiClient {
    * @param params - The params to pass to the Strapi API
    * @returns The endpoint URL
    */
-  public getEndpoint(entityName: string, id?: number, params?: StrapiParams, isSingleType?: boolean): string {
+  public getEndpoint(
+    entityName: string,
+    id?: number,
+    params?: StrapiParams,
+    isSingleType?: boolean,
+  ): string {
     const contentType = this.entityMap.get(entityName);
     const query = qs.stringify(params, { addQueryPrefix: true, encodeValuesOnly: true });
-    return this.getUrl(`/${isSingleType ? contentType?.singularName : contentType?.pluralName}${id ? `/${id}` : ''}${query}`);
+    return this.getUrl(
+      `/${isSingleType ? contentType?.singularName : contentType?.pluralName}${
+        id ? `/${id}` : ''
+      }${query}`,
+    );
   }
 
   /**
@@ -144,10 +163,7 @@ export class StrapiClient {
    * @returns The only instance of the single type of entity
    */
 
-  async fetchSingle<T extends StrapiEntity>(
-    entityName: string,
-    params?: StrapiParams,
-  ): Promise<T> {
+  async fetchSingle<T extends StrapiEntity>(entityName: string, params?: StrapiParams): Promise<T> {
     const json = await this.fetchRawResult('get', entityName, undefined, undefined, params, true);
     return normaliseStrapiResponseItem<T>(json);
   }

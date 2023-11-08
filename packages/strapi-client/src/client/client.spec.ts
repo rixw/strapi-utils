@@ -46,6 +46,32 @@ describe('StrapiClient', () => {
     expect(client.entityMap.get('page')?.singularName).toBe('page');
   });
 
+  it('should support fully qualified content types', async () => {
+    const client = new StrapiClient({
+      url: 'http://127.0.0.1:9999',
+      prefix: '/api',
+      contentTypes: ['page', 'plugin::my-plugin.my-content-type'],
+      jwt: '1234567890',
+      axiosConfig: {
+        timeout: 999,
+      },
+    });
+    expect(client).toBeInstanceOf(StrapiClient);
+    expect(client.opts.url).toBe('http://127.0.0.1:9999');
+    expect(client.opts.jwt).toBe('1234567890');
+    expect(client.opts.axiosConfig).toBeDefined();
+    expect(client.opts.axiosConfig?.timeout).toBe(999);
+    expect(client.entityMap.size).toBe(2);
+    expect(client.entityMap.get('page')).toBeDefined();
+    expect(client.entityMap.get('page')?.id).toBe('api::page.page');
+    expect(client.entityMap.get('page')?.pluralName).toBe('pages');
+    expect(client.entityMap.get('page')?.singularName).toBe('page');
+    expect(client.entityMap.get('my-content-type')).toBeDefined();
+    expect(client.entityMap.get('my-content-type')?.id).toBe('plugin::my-plugin.my-content-type');
+    expect(client.entityMap.get('my-content-type')?.pluralName).toBe('my-content-types');
+    expect(client.entityMap.get('my-content-type')?.singularName).toBe('my-content-type');
+  });
+
   it('should get an endpoint in the format /prefix/pluralName', async () => {
     const client = new StrapiClient({
       contentTypes: ['page'],
