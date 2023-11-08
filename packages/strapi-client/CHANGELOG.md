@@ -1,5 +1,11 @@
 # @rixw/strapi-client
 
+## 0.3.6
+
+### Patch Changes
+
+- 2042541: Reinstate /api prefix for API routes
+
 ## 0.3.5
 
 ### Patch Changes
