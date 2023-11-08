@@ -1,5 +1,11 @@
 # @rixw/strapi-client
 
+## 0.3.7
+
+### Patch Changes
+
+- f3c13f0: BREAKING: refactor API for specifying content-types
+
 ## 0.3.6
 
 ### Patch Changes
