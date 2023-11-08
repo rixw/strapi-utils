@@ -19,17 +19,13 @@ import { normaliseStrapiResponseArray, normaliseStrapiResponseItem } from '../no
 const isFullyQualifiedContentType = (contentType: string): boolean =>
   /^.+\:\:.+\..+$/.test(contentType || '');
 
-const getContentyTypeId = (contentType: string): string =>
-  isFullyQualifiedContentType(contentType) ? contentType : `api::${contentType}.${contentType}`;
-
-const getSingularName = (contentType: string): string =>
-  isFullyQualifiedContentType(contentType) ? contentType.split('.')?.slice(-1)?.[0] : contentType;
+const getContentyTypeId = (contentType: string): string => `api::${contentType}.${contentType}`;
 
 const getEntitySpec = (contentType: string): StrapiContentType => {
   const isFullyQualified = isFullyQualifiedContentType(contentType);
   if (isFullyQualified) {
     const identifiers = contentType.split('::')[1].split('.');
-    const prefix = identifiers[0] === identifiers[1] ? '' : `/${identifiers[0]}`;
+    const prefix = identifiers[0] === identifiers[1] ? '/api' : `/${identifiers[0]}`;
     const singularName = identifiers[1];
     return {
       id: contentType,
@@ -42,7 +38,7 @@ const getEntitySpec = (contentType: string): StrapiContentType => {
     id: getContentyTypeId(contentType),
     singularName: contentType,
     pluralName: pluralize(contentType),
-    prefix: '',
+    prefix: '/api',
   };
 };
 
@@ -78,7 +74,7 @@ export class StrapiClient {
   }
 
   private getUrl(path: string): string {
-    return `${this.opts.url}${this.opts.prefix}${path}`;
+    return `${this.opts.url}${path}`;
   }
 
   /**

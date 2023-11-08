@@ -70,7 +70,7 @@ describe('StrapiClient', () => {
     expect(client.entityMap.get('my-content-type')?.pluralName).toBe('my-content-types');
     expect(client.entityMap.get('my-content-type')?.singularName).toBe('my-content-type');
     expect(client.getEndpoint('my-content-type')).toBe(
-      'http://127.0.0.1:9999/api/my-plugin/my-content-types',
+      'http://127.0.0.1:9999/my-plugin/my-content-types',
     );
   });
 
