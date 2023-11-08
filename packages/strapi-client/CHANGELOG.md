@@ -1,5 +1,11 @@
 # @rixw/strapi-client
 
+## 0.3.5
+
+### Patch Changes
+
+- 6cf478a: Fix URL path logic for content types
+
 ## 0.3.4
 
 ### Patch Changes
