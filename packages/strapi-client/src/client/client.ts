@@ -25,6 +25,27 @@ const getContentyTypeId = (contentType: string): string =>
 const getSingularName = (contentType: string): string =>
   isFullyQualifiedContentType(contentType) ? contentType.split('.')?.slice(-1)?.[0] : contentType;
 
+const getEntitySpec = (contentType: string): StrapiContentType => {
+  const isFullyQualified = isFullyQualifiedContentType(contentType);
+  if (isFullyQualified) {
+    const identifiers = contentType.split('::')[1].split('.');
+    const prefix = identifiers[0] === identifiers[1] ? '' : `/${identifiers[0]}`;
+    const singularName = identifiers[1];
+    return {
+      id: contentType,
+      singularName,
+      pluralName: pluralize(singularName),
+      prefix,
+    };
+  }
+  return {
+    id: getContentyTypeId(contentType),
+    singularName: contentType,
+    pluralName: pluralize(contentType),
+    prefix: '',
+  };
+};
+
 export class StrapiClient {
   opts: StrapiClientOptions;
   readonly entityMap: Map<string, StrapiContentType>;
@@ -46,10 +67,8 @@ export class StrapiClient {
     this.opts = { ...defaultOptions, ...options };
     this.entityMap = new Map();
     this.opts?.contentTypes?.forEach((contentType) => {
-      const id = getContentyTypeId(contentType);
-      const singularName = getSingularName(contentType);
-      const pluralName = pluralize(singularName);
-      this.entityMap.set(singularName, { id, singularName, pluralName });
+      const spec = getEntitySpec(contentType);
+      this.entityMap.set(spec.singularName, spec);
     });
     this.axiosInstance = this.opts.maxRequestsPerSecond
       ? rateLimit(axios.create(this.opts.axiosConfig), {
@@ -78,9 +97,9 @@ export class StrapiClient {
     const contentType = this.entityMap.get(entityName);
     const query = qs.stringify(params, { addQueryPrefix: true, encodeValuesOnly: true });
     return this.getUrl(
-      `/${isSingleType ? contentType?.singularName : contentType?.pluralName}${
-        id ? `/${id}` : ''
-      }${query}`,
+      `${contentType?.prefix}/${
+        isSingleType ? contentType?.singularName : contentType?.pluralName
+      }${id ? `/${id}` : ''}${query}`,
     );
   }
 

@@ -44,6 +44,7 @@ describe('StrapiClient', () => {
     expect(client.entityMap.get('page')?.id).toBe('api::page.page');
     expect(client.entityMap.get('page')?.pluralName).toBe('pages');
     expect(client.entityMap.get('page')?.singularName).toBe('page');
+    expect(client.getEndpoint('page')).toBe('http://127.0.0.1:9999/api/pages');
   });
 
   it('should support fully qualified content types', async () => {
@@ -64,12 +65,13 @@ describe('StrapiClient', () => {
     expect(client.entityMap.size).toBe(2);
     expect(client.entityMap.get('page')).toBeDefined();
     expect(client.entityMap.get('page')?.id).toBe('api::page.page');
-    expect(client.entityMap.get('page')?.pluralName).toBe('pages');
-    expect(client.entityMap.get('page')?.singularName).toBe('page');
     expect(client.entityMap.get('my-content-type')).toBeDefined();
     expect(client.entityMap.get('my-content-type')?.id).toBe('plugin::my-plugin.my-content-type');
     expect(client.entityMap.get('my-content-type')?.pluralName).toBe('my-content-types');
     expect(client.entityMap.get('my-content-type')?.singularName).toBe('my-content-type');
+    expect(client.getEndpoint('my-content-type')).toBe(
+      'http://127.0.0.1:9999/api/my-plugin/my-content-types',
+    );
   });
 
   it('should get an endpoint in the format /prefix/pluralName', async () => {

@@ -624,6 +624,7 @@ export type StrapiContentType = {
   id: string;
   singularName: string;
   pluralName: string;
+  prefix: string;
 };
 
 export type StrapiClientOptions = {
