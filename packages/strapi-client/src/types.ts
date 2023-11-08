@@ -623,14 +623,15 @@ export type StrapiLocale =
 export type StrapiContentType = {
   id: string;
   singularName: string;
-  pluralName: string;
-  prefix: string;
+  path: string;
 };
+
+export type StrapiContentTypeInput = string | StrapiContentType;
 
 export type StrapiClientOptions = {
   url?: string;
   prefix?: string;
-  contentTypes: string[];
+  contentTypes: StrapiContentTypeInput[];
   jwt?: string | null;
   axiosConfig?: AxiosRequestConfig;
   maxRequestsPerSecond?: number;

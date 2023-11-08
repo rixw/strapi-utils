@@ -7,6 +7,7 @@ import {
   StrapiAuthenticationResponse,
   StrapiClientOptions,
   StrapiContentType,
+  StrapiContentTypeInput,
   StrapiEntity,
   StrapiError,
   StrapiPaginatedArray,
@@ -16,30 +17,17 @@ import {
 } from '../types';
 import { normaliseStrapiResponseArray, normaliseStrapiResponseItem } from '../normalise';
 
-const isFullyQualifiedContentType = (contentType: string): boolean =>
-  /^.+\:\:.+\..+$/.test(contentType || '');
-
-const getContentyTypeId = (contentType: string): string => `api::${contentType}.${contentType}`;
-
-const getEntitySpec = (contentType: string): StrapiContentType => {
-  const isFullyQualified = isFullyQualifiedContentType(contentType);
-  if (isFullyQualified) {
-    const identifiers = contentType.split('::')[1].split('.');
-    const prefix = identifiers[0] === identifiers[1] ? '/api' : `/${identifiers[0]}`;
-    const singularName = identifiers[1];
-    return {
-      id: contentType,
-      singularName,
-      pluralName: pluralize(singularName),
-      prefix,
-    };
-  }
+const getSimpleEntitySpec = (contentType: string): StrapiContentType => {
   return {
-    id: getContentyTypeId(contentType),
+    id: `api::${contentType}.${contentType}`,
     singularName: contentType,
-    pluralName: pluralize(contentType),
-    prefix: '/api',
+    path: `/api/${pluralize(contentType)}`,
   };
+};
+
+const getEntitySpec = (contentType: string | StrapiContentTypeInput): StrapiContentType => {
+  const isSimple = typeof contentType === 'string';
+  return isSimple ? getSimpleEntitySpec(contentType as string) : contentType;
 };
 
 export class StrapiClient {
@@ -92,11 +80,7 @@ export class StrapiClient {
   ): string {
     const contentType = this.entityMap.get(entityName);
     const query = qs.stringify(params, { addQueryPrefix: true, encodeValuesOnly: true });
-    return this.getUrl(
-      `${contentType?.prefix}/${
-        isSingleType ? contentType?.singularName : contentType?.pluralName
-      }${id ? `/${id}` : ''}${query}`,
-    );
+    return this.getUrl(`${contentType?.path}${id ? `/${id}` : ''}${query}`);
   }
 
   /**
