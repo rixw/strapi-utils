@@ -1,5 +1,11 @@
 # @rixw/strapi-client
 
+## 0.3.4
+
+### Patch Changes
+
+- 679053f: Support fully-qualified Strapi UIDs for content types
+
 ## 0.3.3
 
 ### Patch Changes
