@@ -1,5 +1,11 @@
 # @rixw/strapi-client
 
+## 0.3.8
+
+### Patch Changes
+
+- 2e656c3: Implement ID type as union of string and number
+
 ## 0.3.7
 
 ### Patch Changes
