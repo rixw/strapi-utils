@@ -1,5 +1,6 @@
 import { DATE_PROPERTY_REGEX, ISO_DATE_REGEX } from '../constants';
 import {
+  ID,
   StrapiEntity,
   StrapiPaginatedArray,
   StrapiPaginationOffsetResponse,
@@ -22,7 +23,7 @@ const recursiveNormalise = <T extends StrapiEntity>(
 ): T => {
   // Validate that we have an id
   if ('id' in item === false) throw new Error('Cannot normalise item without an id');
-  const { id } = item as { id: number };
+  const { id } = item as { id: ID };
   const enableDateParsing = parseDates !== false;
   const parseDatesRegex = parseDates || DATE_PROPERTY_REGEX;
   let result: Record<string, any> = { id, meta: 'meta' in item ? item['meta'] : undefined };

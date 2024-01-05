@@ -1,12 +1,14 @@
 import type { AxiosRequestConfig } from 'axios';
 
+export type ID = number | string;
+
 export type StrapiAuthenticationResponse = {
   user: Record<string, unknown>;
   jwt: string;
 };
 
 export type StrapiEntity = {
-  id?: number;
+  id?: ID;
   createdAt?: Date;
   updatedAt?: Date;
   publishedAt?: Date;

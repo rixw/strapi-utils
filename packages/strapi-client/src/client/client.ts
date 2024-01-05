@@ -4,6 +4,7 @@ import pluralize from 'pluralize';
 import qs from 'qs';
 import { defaultOptions } from '../constants';
 import {
+  ID,
   StrapiAuthenticationResponse,
   StrapiClientOptions,
   StrapiContentType,
@@ -74,7 +75,7 @@ export class StrapiClient {
    */
   public getEndpoint(
     entityName: string,
-    id?: number,
+    id?: ID,
     params?: StrapiParams,
     isSingleType?: boolean,
   ): string {
@@ -117,7 +118,7 @@ export class StrapiClient {
   async fetchRawResult<T extends StrapiEntity>(
     method: 'get' | 'post' | 'put' | 'delete',
     entityName: string,
-    id?: number,
+    id?: ID,
     data?: any,
     params?: StrapiParams,
     isSingleType?: boolean,
@@ -176,7 +177,7 @@ export class StrapiClient {
    */
   async fetchById<T extends StrapiEntity>(
     entityName: string,
-    id: number,
+    id: ID,
     params?: StrapiParams,
   ): Promise<T> {
     const json = await this.fetchRawResult('get', entityName, id, undefined, params);
@@ -297,7 +298,7 @@ export class StrapiClient {
    */
   async update<T extends StrapiEntity>(
     entityName: string,
-    id: number,
+    id: ID,
     data: any,
     params?: StrapiParams,
   ): Promise<T> {
@@ -324,7 +325,7 @@ export class StrapiClient {
    * @param params - The params to pass to the Strapi API
    * @returns The deleted entity
    */
-  async delete<T extends StrapiEntity>(entityName: string, id: number, params?: any): Promise<T> {
+  async delete<T extends StrapiEntity>(entityName: string, id: ID, params?: any): Promise<T> {
     const json = await this.fetchRawResult('delete', entityName, id, undefined, params);
     return normaliseStrapiResponseItem<T>(json);
   }
