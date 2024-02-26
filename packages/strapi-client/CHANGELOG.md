@@ -1,5 +1,11 @@
 # @rixw/strapi-client
 
+## 0.3.9
+
+### Patch Changes
+
+- f963f0c: Uses the passed isSingleType prop from fetchSingle to determine if should pluralise the endpoint name or not
+
 ## 0.3.8
 
 ### Patch Changes
