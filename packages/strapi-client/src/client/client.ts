@@ -71,6 +71,7 @@ export class StrapiClient {
    * @param entityName - The singular name of the entity you want to query/write
    * @param id - The ID of the entity you want to query/write, or undefined
    * @param params - The params to pass to the Strapi API
+   * @param isSingleType - Whether the entity is a single type
    * @returns The endpoint URL
    */
   public getEndpoint(
@@ -81,7 +82,8 @@ export class StrapiClient {
   ): string {
     const contentType = this.entityMap.get(entityName);
     const query = qs.stringify(params, { addQueryPrefix: true, encodeValuesOnly: true });
-    return this.getUrl(`${contentType?.path}${id ? `/${id}` : ''}${query}`);
+    const path = isSingleType ? contentType?.singularName : pluralize(contentType?.singularName);
+    return this.getUrl(`/api/${path}${id ? `/${id}` : ''}${query}`);
   }
 
   /**
