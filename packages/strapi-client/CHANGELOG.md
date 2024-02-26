@@ -1,5 +1,11 @@
 # @rixw/strapi-client
 
+## 0.3.10
+
+### Patch Changes
+
+- 0153b31: Update documentation on single types
+
 ## 0.3.9
 
 ### Patch Changes
