@@ -106,9 +106,16 @@ const page = await client.fetchById<Page>('page', 1);
   // An array of the content types in your API. This is used to map the UID of
   // the type to singular and plural names for building the API URLs.
   // Can be either simple singular names (in which case the UID is assumed to be
-  // `api::entity.entity`) or a fully qualified Strapi entity id (e.g.
-  // for a plugin, such as `plugin::users-permissions.user`)
-  contentTypes: ['page', 'post', 'plugin::users-permissions.user'],
+  // `api::entity.entity`) or for other entries a fully qualified Strapi entity
+  contentTypes: [
+    'page',
+    'post',
+    {
+      id: 'plugin::my-plugin.my-content-type',
+      singularName: 'my-content-type',
+      path: '/api/my-plugin/my-content-types',
+    },
+  ],
 
   // A JWT token to use for authentication. You can provide either Strapi's
   // long-lived API Tokens or, if you've cached a short-term JWT token from the
@@ -134,7 +141,7 @@ const page = await client.fetchById<Page>('page', 1);
       auth: {
         username: 'proxyuser',
         password: 'proxypassword'
-      }
+      },
     },
   },
 }
@@ -198,6 +205,24 @@ using Typescript, this object is typed.
 The response is unwrapped from Strapi's complicated data structure and returned
 as a `StrapiPaginatedArray<T>`, which is essentially a plain array of entities
 with an additional `pagination` property.
+
+#### `fetchSingle<T extends StrapiEntity> => Promise<T>`
+
+```typescript
+const pages = await client.fetchSingle<Page>('homepage', {
+  populate: '*',
+});
+```
+
+Makes a GET request for the specified single entity. Uses the contentTypes array to
+work out the URL. Provided `params` are passed to the API after conversion with
+the [qs](https://github.com/ljharb/qs) library as described in the
+[Strapi docs](https://docs.strapi.io/dev-docs/api/rest/parameters). Enables you
+to specify `populate`, `fields`, `filters` etc without boilerplate. If you're
+using Typescript, this object is typed.
+
+The response is unwrapped from Strapi's complicated data structure and returned
+as a simple object..
 
 ## Normalisation
 
