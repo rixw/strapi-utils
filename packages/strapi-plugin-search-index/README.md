@@ -129,12 +129,16 @@ Rebuilding works like this:
 
 ### Rebuild API endpoints
 
-The plugin creates a `search-index` controller with a `rebuild` endpoint. This is a `POST` endpoint that expects a simple JSON input:
+The plugin creates a `search-index` controller with a `POST` endpoint that expects a simple JSON input:
 
 ```jsonc
-// POST ./search-index/rebuild
+// POST ./search-index
 {
-  "contentTypes": ["type", "another-type"]
+  "contentTypes": ["api::type.type", "api::another-type.another-type"]
+}
+// or
+{
+  "contentTypes": "*" // to rebuild all configured content-types
 }
 ```
 
