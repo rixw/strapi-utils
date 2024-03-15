@@ -1,5 +1,11 @@
 # @rixw/strapi-plugin-search
 
+## 1.0.0
+
+### Major Changes
+
+- 115377d: Release v1 as this is now used in production
+
 ## 0.5.12
 
 ### Patch Changes
