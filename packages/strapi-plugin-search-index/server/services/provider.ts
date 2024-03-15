@@ -175,7 +175,7 @@ const provider = () => ({
         (contentType) => types === '*' || types.includes(contentType.name),
       );
       strapi.log.debug(
-        `Rebuild: specified content types [${contentTypes.map((x) => x.name).join(', ')}]`,
+        `Rebuild: specified content types [${specifiedTypes.map((x) => x.name).join(', ')}]`,
       );
       const indexNames = specifiedTypes.map((type) => type.index);
       strapi.log.debug(`Rebuild: index names [${indexNames.join(', ')}]`);
