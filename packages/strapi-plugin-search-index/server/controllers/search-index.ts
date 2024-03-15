@@ -22,11 +22,11 @@ export default ({ strapi }: { strapi: Strapi }) => ({
     if (!rawPayload) {
       throw createError.BadRequest('Missing payload');
     }
-    if (
-      typeof rawPayload !== 'object' ||
-      !Object.entries(rawPayload).find(([key]) => key === 'contentTypes') ||
-      !Array.isArray(rawPayload['contentTypes'])
-    ) {
+    const valid =
+      typeof rawPayload === 'object' &&
+      rawPayload['contentTypes'] &&
+      (Array.isArray(rawPayload['contentTypes']) || rawPayload['contentTypes'] === '*');
+    if (!valid) {
       throw createError.BadRequest('Invalid payload');
     }
     const payload = rawPayload as RebuildPayload;
