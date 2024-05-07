@@ -163,6 +163,34 @@ describe('StrapiClient', () => {
       expect(pagination.page).toBe(1);
       expect(pagination.pageSize).toBe(25);
     });
+
+    it('should support nested filter parameters', async () => {
+      const url = `http://127.0.0.1:1337/api/pages`;
+      mock.onGet().reply(200, fixture);
+      const client = new StrapiClient({
+        contentTypes: ['page'],
+      });
+      const result = await client.fetchMany<FixtureData>('page', {
+        populate: 'deep,3',
+        sort: ['title:asc', 'createdAt:desc'],
+        pagination: {
+          page: 1,
+          pageSize: 3,
+          withCount: true,
+        },
+        publicationState: 'live',
+        locale: 'en',
+        filters: {
+          child_pages: {
+            slug: { $eq: 'node' },
+          },
+        },
+      });
+      expect(mock.history.get).toHaveLength(1);
+      const calledUrl = new URL(mock.history.get[0].url as string);
+      const { searchParams } = calledUrl;
+      expect(searchParams.get('filters[child_pages][slug][$eq]')).toBe('node');
+    });
   });
 
   describe('fetchById', () => {
