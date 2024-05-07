@@ -1,5 +1,11 @@
 # @rixw/strapi-client
 
+## 0.3.11
+
+### Patch Changes
+
+- 61370be: Fix typing for nested filters
+
 ## 0.3.10
 
 ### Patch Changes
