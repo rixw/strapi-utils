@@ -108,7 +108,14 @@ export type StrapiFiltersWithOperator = {
   [key: string]: StrapiFilterWithOperator;
 };
 
-export type StrapiFilters = StrapiFilterWithGrouping | StrapiFiltersWithOperator;
+export type StrapiFiltersWithNesting = {
+  [key: string]: StrapiFiltersWithNesting | StrapiFiltersWithOperator;
+};
+
+export type StrapiFilters =
+  | StrapiFilterWithGrouping
+  | StrapiFiltersWithOperator
+  | StrapiFiltersWithNesting;
 
 export type StrapiParams = {
   sort?: string | string[];
