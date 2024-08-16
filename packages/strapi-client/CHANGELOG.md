@@ -1,5 +1,11 @@
 # @rixw/strapi-client
 
+## 0.4.0
+
+### Minor Changes
+
+- caf3344: Implement debug logging. Note that this logging uses structuredClone so the node version required is now a minimum of 18.
+
 ## 0.3.11
 
 ### Patch Changes
