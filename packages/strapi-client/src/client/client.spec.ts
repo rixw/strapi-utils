@@ -93,6 +93,17 @@ describe('StrapiClient', () => {
   });
 
   describe('fetchMany', () => {
+    it('should debug log the call', async () => {
+      mock.onGet().reply(200, fixture);
+      const client = new StrapiClient({
+        contentTypes: ['page'],
+        debug: true,
+      });
+      const result = await client.fetchAll<FixtureData>('page', undefined, 1, 750);
+      expect(result).toBeDefined();
+      expect(result).toHaveLength(3);
+    });
+
     it('should respect provided axios config', async () => {
       const url = `http://127.0.0.1:1337/api/pages`;
       mock.onGet(url).reply((config) => {
