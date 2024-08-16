@@ -644,6 +644,7 @@ export type StrapiClientOptions = {
   jwt?: string | null;
   axiosConfig?: AxiosRequestConfig;
   maxRequestsPerSecond?: number;
+  debug?: boolean;
 };
 
 export type StrapiUser = Record<string, unknown> | null;

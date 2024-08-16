@@ -47,8 +47,10 @@ export class StrapiClient {
    * @param options.axiosConfig - Axios configuration options, passed directly to axios
    * @param options.contentTypes - The content types you want to use with your Strapi instance
    * @param options.maxRequestsPerSecond - The maximum number of requests per second
+   * @param options.debug - Whether to log debug information to the console
    */
   constructor(private readonly options?: StrapiClientOptions) {
+    options?.debug && console.debug('StrapiClient:constructor', structuredClone(options));
     this.opts = { ...defaultOptions, ...options };
     this.entityMap = new Map();
     this.opts?.contentTypes?.forEach((contentType) => {
@@ -74,6 +76,7 @@ export class StrapiClient {
    * @returns The endpoint URL
    */
   public getEndpoint(entityName: string, id?: ID, params?: StrapiParams): string {
+    this.opts.debug && console.debug('StrapiClient:getEndpoint', entityName, id, params);
     const contentType = this.entityMap.get(entityName);
     if (!contentType) {
       throw new Error(`Entity ${entityName} not found`);
@@ -89,6 +92,7 @@ export class StrapiClient {
    * @returns A JWT token
    */
   public async login(identifier: string, password: string): Promise<string> {
+    this.opts.debug && console.debug('StrapiClient:login', identifier);
     const response = await axios.get(this.getUrl('/auth/local'), {
       ...this.opts.axiosConfig,
       method: 'POST',
@@ -120,13 +124,17 @@ export class StrapiClient {
     data?: any,
     params?: StrapiParams,
   ): Promise<StrapiResponse> {
+    this.opts.debug &&
+      console.debug('fetchRawResult', method, entityName, id, data, structuredClone(params));
     try {
       const url = this.getEndpoint(entityName, id, params);
+      this.opts.debug && console.debug('StrapiClient:fetchRawResult: url', url);
       const headers = this.opts.jwt
         ? {
             Authorization: `Bearer ${this.opts.jwt}`,
           }
         : undefined;
+      this.opts.debug && console.debug('StrapiClient:fetchRawResult: headers', headers);
       const response = await axios({
         ...this.opts.axiosConfig,
         method,
@@ -134,8 +142,11 @@ export class StrapiClient {
         headers,
         data,
       });
+      this.opts.debug &&
+        console.debug('StrapiClient:fetchRawResult: response', structuredClone(response));
       return response.data as StrapiResponse;
     } catch (err) {
+      this.opts.debug && console.debug('StrapiClient:fetchRawResult: error', structuredClone(err));
       const e = err as AxiosError<StrapiError>;
       if (!e.response) {
         throw {
@@ -161,6 +172,7 @@ export class StrapiClient {
    */
 
   async fetchSingle<T extends StrapiEntity>(entityName: string, params?: StrapiParams): Promise<T> {
+    this.opts.debug && console.debug('StrapiClient:fetchSingle', entityName, params);
     const json = await this.fetchRawResult('get', entityName, undefined, undefined, params);
     return normaliseStrapiResponseItem<T>(json);
   }
@@ -177,6 +189,8 @@ export class StrapiClient {
     id: ID,
     params?: StrapiParams,
   ): Promise<T> {
+    this.opts.debug &&
+      console.debug('StrapiClient:fetchById', entityName, id, structuredClone(params));
     const json = await this.fetchRawResult('get', entityName, id, undefined, params);
     return normaliseStrapiResponseItem<T>(json);
   }
@@ -193,6 +207,8 @@ export class StrapiClient {
     entityName: string,
     params?: StrapiParams,
   ): Promise<T | null> {
+    this.opts.debug &&
+      console.debug('StrapiClient:fetchFirst', entityName, structuredClone(params));
     const useParams = { ...(params || {}), pagination: { page: 1, pageSize: 1 } };
     const json = await this.fetchRawResult('get', entityName, undefined, undefined, useParams);
     const array = normaliseStrapiResponseArray<T>(json);
@@ -209,6 +225,7 @@ export class StrapiClient {
     entityName: string,
     params?: StrapiParams,
   ): Promise<StrapiPaginatedArray<T>> {
+    this.opts.debug && console.debug('StrapiClient:fetchMany', entityName, structuredClone(params));
     const json = await this.fetchRawResult('get', entityName, undefined, undefined, params);
     return normaliseStrapiResponseArray<T>(json);
   }
@@ -228,6 +245,14 @@ export class StrapiClient {
     page?: number,
     pageSize?: number,
   ): Promise<StrapiPaginatedArray<T>> {
+    this.opts.debug &&
+      console.debug(
+        'StrapiClient:fetchManyPagePaginated',
+        entityName,
+        structuredClone(params),
+        page,
+        pageSize,
+      );
     const paramsWithPagination = { ...(params || {}), pagination: { page, pageSize } };
     return this.fetchMany(entityName, paramsWithPagination);
   }
@@ -247,6 +272,14 @@ export class StrapiClient {
     start?: number,
     limit?: number,
   ): Promise<StrapiPaginatedArray<T>> {
+    this.opts.debug &&
+      console.debug(
+        'StrapiClient:fetchManyOffsetPaginated',
+        entityName,
+        structuredClone(params),
+        start,
+        limit,
+      );
     const paramsWithPagination = { ...(params || {}), pagination: { start, limit } };
     return this.fetchMany(entityName, paramsWithPagination);
   }
@@ -267,6 +300,8 @@ export class StrapiClient {
     limit: number = 50,
     timeout?: number,
   ): Promise<T[]> {
+    this.opts.debug &&
+      console.debug('StrapiClient:fetchAll', entityName, structuredClone(params), limit, timeout);
     const result = [] as T[];
     const startTime = +new Date();
     let total = 0;
@@ -274,7 +309,7 @@ export class StrapiClient {
     let start = 0;
     do {
       if (timeout && +new Date() - timeout > startTime) {
-        throw new Error('fetchAll: Timeout');
+        throw new Error('StrapiClient:fetchAll: Timeout');
       }
       const page = await this.fetchManyOffsetPaginated<T>(entityName, params, start, limit);
       result.push(...(page as T[]));
@@ -299,6 +334,14 @@ export class StrapiClient {
     data: any,
     params?: StrapiParams,
   ): Promise<T> {
+    this.opts.debug &&
+      console.debug(
+        'StrapiClient:update',
+        entityName,
+        id,
+        structuredClone(data),
+        structuredClone(params),
+      );
     const json = await this.fetchRawResult('put', entityName, id, data, params);
     return normaliseStrapiResponseItem<T>(json);
   }
@@ -311,6 +354,13 @@ export class StrapiClient {
    * @returns The created entity
    */
   async create<T extends StrapiEntity>(entityName: string, data: any, params?: any): Promise<T> {
+    this.opts.debug &&
+      console.debug(
+        'StrapiClient:create',
+        entityName,
+        structuredClone(data),
+        structuredClone(params),
+      );
     const json = await this.fetchRawResult('post', entityName, undefined, data, params);
     return normaliseStrapiResponseItem<T>(json);
   }
@@ -323,6 +373,8 @@ export class StrapiClient {
    * @returns The deleted entity
    */
   async delete<T extends StrapiEntity>(entityName: string, id: ID, params?: any): Promise<T> {
+    this.opts.debug &&
+      console.debug('StrapiClient:delete', entityName, id, structuredClone(params));
     const json = await this.fetchRawResult('delete', entityName, id, undefined, params);
     return normaliseStrapiResponseItem<T>(json);
   }

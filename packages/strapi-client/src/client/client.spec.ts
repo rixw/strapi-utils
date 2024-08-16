@@ -22,6 +22,7 @@ describe('StrapiClient', () => {
     expect(client.opts.contentTypes).toHaveLength(0);
     expect(client.entityMap).toBeDefined();
     expect(client.entityMap.size).toBe(0);
+    expect(client.opts.debug).toBe(false);
   });
 
   it('should instantiate with provided options', async () => {
@@ -33,6 +34,7 @@ describe('StrapiClient', () => {
       axiosConfig: {
         timeout: 999,
       },
+      debug: true,
     });
     expect(client).toBeInstanceOf(StrapiClient);
     expect(client.opts.url).toBe('http://127.0.0.1:9999');
@@ -45,6 +47,7 @@ describe('StrapiClient', () => {
     expect(client.entityMap.get('page')?.path).toBe('/api/pages');
     expect(client.entityMap.get('page')?.singularName).toBe('page');
     expect(client.getEndpoint('page', 1)).toBe('http://127.0.0.1:9999/api/pages/1');
+    expect(client.opts.debug).toBe(true);
   });
 
   it('should support fully qualified content types', async () => {

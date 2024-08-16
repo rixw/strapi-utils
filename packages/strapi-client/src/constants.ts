@@ -9,6 +9,7 @@ export const defaultOptions: StrapiClientOptions = {
   contentTypes: [],
   jwt: null,
   axiosConfig: {},
+  debug: false,
 };
 
 /**

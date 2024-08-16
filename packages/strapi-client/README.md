@@ -1,8 +1,8 @@
 # Strapi Client
 
-** NOTE: this is a very early stage alpha that I am developing alongside a
-project I'm working on. It is not yet ready for production use, and the API is
-likely to change. Constructive feedback welcome! **
+** NOTE: this is an early stage alpha that I am developing alongside a project
+I'm working on. It is not yet ready for production use, and the API is likely to
+change. Constructive feedback welcome! **
 
 This is a generic REST API client for [Strapi](https://strapi.io/) v4. It is
 being created with a couple of objectives:
@@ -144,6 +144,10 @@ const page = await client.fetchById<Page>('page', 1);
       },
     },
   },
+
+  // If true, the client will log debug information to the console.
+  // Default: false.
+  debug: true,
 }
 ```
 
