@@ -1,5 +1,11 @@
 # @rixw/strapi-client
 
+## 0.4.1
+
+### Patch Changes
+
+- a312d80: Fix logging error with circular reference in response
+
 ## 0.4.0
 
 ### Minor Changes
