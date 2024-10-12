@@ -1,9 +1,5 @@
 # Strapi Client
 
-** NOTE: this is an early stage alpha that I am developing alongside a project
-I'm working on. It is not yet ready for production use, and the API is likely to
-change. Constructive feedback welcome! **
-
 This is a generic REST API client for [Strapi](https://strapi.io/) v4. It is
 being created with a couple of objectives:
 
@@ -31,9 +27,13 @@ being created with a couple of objectives:
 ## Compatibility
 
 This library is compatible with Strapi v4. It has been tested with Strapi v4.9
-but should be backwards compatible to any v4 version. Because of the different
-REST API response formats in Strapi v3 and v4, this library is not compatible
-with Strapi v3.
+but should be backwards compatible to any v4 version.
+
+Strapi v5 enables a simplified REST response, so the unwrapping in this
+library will not be necessary. I have not tested this library with Strapi v5.
+
+Because of the different REST API response formats in Strapi v3 and v4, this
+library is not compatible with Strapi v3.
 
 HTTP requests use [Axios](https://axios-http.com/) so can work on both client
 and server side.
@@ -105,11 +105,18 @@ const page = await client.fetchById<Page>('page', 1);
 
   // An array of the content types in your API. This is used to map the UID of
   // the type to singular and plural names for building the API URLs.
-  // Can be either simple singular names (in which case the UID is assumed to be
-  // `api::entity.entity`) or for other entries a fully qualified Strapi entity
+  // Can be either simple singular names, in which case the UID is assumed to be
+  // `api::entity.entity` and the path `/api/entities`. For other entries
+  // including single types or plugin entities, use a longer-form object
+  // definition.
   contentTypes: [
     'page',
     'post',
+    {
+      id: 'api::homepage.homepage',
+      singularName: 'homepage',
+      path: '/api/homepage',
+    },
     {
       id: 'plugin::my-plugin.my-content-type',
       singularName: 'my-content-type',
