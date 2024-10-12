@@ -1,5 +1,11 @@
 # @rixw/strapi-client
 
+## 0.4.2
+
+### Patch Changes
+
+- 815ccd6: Updated README to better explain how to use single types with Strapi Client
+
 ## 0.4.1
 
 ### Patch Changes
