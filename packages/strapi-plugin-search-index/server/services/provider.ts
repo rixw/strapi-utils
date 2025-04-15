@@ -6,6 +6,7 @@ import {
   PopulateParameter,
   Provider,
   StrapiEntity,
+  StrapiWrappedEntity,
 } from '../../types';
 import { wrapMethodWithError } from '../utils/error';
 import { sanitize } from '../utils/sanitize';
@@ -15,7 +16,6 @@ const PAGE_SIZE = 100;
 
 export const getFieldsParameter = (contentType: ContentType): string[] | undefined => {
   if (contentType.fields === '*' || contentType.fields?.length === 0) return undefined;
-  // strapi.log.debug(`Getting field parameters for to [${contentType.fields.join(', ')}]`);
   const result = [
     ...contentType.fields,
     contentType.fields.includes('id') ? undefined : 'id',
@@ -23,34 +23,45 @@ export const getFieldsParameter = (contentType: ContentType): string[] | undefin
   return result;
 };
 
-export const getPopulateParameter = (fieldParameter: string[] | null): PopulateParameter => {
-  // strapi.log.debug(
-  //   `Getting poulate parameter for [${fieldParameter ? fieldParameter.join(', ') : '*'}]`,
-  // );
-  if (!fieldParameter) return '*';
-  const result: { [key: string]: boolean } = {};
-  fieldParameter.forEach((x) => (result[x] = true));
-  return result;
+export const getPopulateParameter = (contentType: ContentType): PopulateParameter | undefined => {
+  return contentType.populate ?? undefined;
+};
+
+export const getBulkEntities = async (
+  contentType: ContentType,
+  ids: number[],
+): Promise<StrapiWrappedEntity[]> => {
+  strapi.log.debug(`Getting entities for ${contentType.name} with ${ids.length} IDs`);
+  const filters = {
+    id: { $in: ids },
+  };
+  const fields = getFieldsParameter(contentType);
+  const populate = getPopulateParameter(contentType);
+  const parameters: FindManyParameters = {
+    publicationState: 'live',
+    fields,
+    populate,
+    filters,
+  };
+  const entities = await strapi.entityService.findMany(contentType.name, parameters);
+  strapi.log.debug(`Retrieved ${entities?.data?.length || 0} entities for ${contentType.name}`);
+  return entities?.data || [];
 };
 
 const getPageOfEntities = async (
   contentType: ContentType,
   page: number,
-  pageSize: number,
+  pageSize: number = 100,
 ): Promise<StrapiEntity[]> => {
-  let parameters: FindManyParameters = {
-    populate: '*',
+  const fields = getFieldsParameter(contentType);
+  const populate = getPopulateParameter(contentType);
+  const parameters: FindManyParameters = {
     publicationState: 'live',
+    fields,
+    populate,
     page,
     pageSize,
   };
-  // strapi.log.debug(`Querying page ${page} size ${pageSize} of ${contentType.name} entities`);
-  const fields = getFieldsParameter(contentType);
-  if (fields) {
-    parameters.fields = fields;
-    parameters.populate = getPopulateParameter(fields);
-  }
-  strapi.log.debug(`Find many parameters ${JSON.stringify(parameters)}`);
   return strapi.entityService.findMany(contentType.name, parameters);
 };
 
@@ -60,9 +71,7 @@ const getAllEntities = async (contentType: ContentType): Promise<StrapiEntity[]>
   let page = 1;
   let fullPage = false;
   do {
-    // strapi.log.debug(`Retrieving page ${page} (size ${PAGE_SIZE}) of ${contentType.name} entities`);
     const pageOfEntities = await getPageOfEntities(contentType, page, PAGE_SIZE);
-    // console.debug('Page of entities', pageOfEntities);
     strapi.log.debug(`Retrieved ${pageOfEntities.length} ${contentType.name} entities`);
     result.push(...pageOfEntities);
     fullPage = pageOfEntities.length === PAGE_SIZE;
@@ -224,12 +233,10 @@ const provider = () => ({
           const { name } = contentType;
           strapi.log.debug(`Rebuilding search index ${indexName} for content-type ${name}`);
           const entities = await getAllEntities(contentType);
-          console.debug('entities', entities);
           strapi.log.debug(
             `Adding ${entities.length} ${name} entities to search index ${indexName}`,
           );
           const sanitizedEntities = entities.map((x) => sanitize(contentType, x));
-          console.debug('sanitizedEntities', sanitizedEntities);
           await pluginInstance.createMany({
             indexName,
             data: sanitizedEntities,

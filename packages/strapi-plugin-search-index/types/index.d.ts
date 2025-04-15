@@ -57,6 +57,7 @@ export type ContentType = {
   name: string;
   index?: string;
   fields: string[] | '*';
+  populate?: PopulateParameter;
   excludedFields?: string[];
   idPrefix?: string;
   transforms?: Transforms;
@@ -75,12 +76,13 @@ export type Provider = {
   init: (pluginConfig: PluginConfig) => Promise<ProviderInstance>;
 };
 
-export type PopulateParameter = '*' | { [key: string]: boolean };
+export type PopulateParameter = '*' | { [key: string]: boolean | PopulateParameter };
 
 export type FindManyParameters = {
-  populate: '*' | { [key: string]: boolean };
   publicationState: 'live';
-  page: number;
-  pageSize: number;
+  page?: number;
+  pageSize?: number;
   fields?: string[];
+  populate?: PopulateParameter;
+  filters?: object;
 };

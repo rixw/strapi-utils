@@ -1,13 +1,7 @@
 import { Event } from '@strapi/database/lib/lifecycles';
 import { getObjectId, sanitize } from '../utils/sanitize';
-import {
-  ContentType,
-  PluginConfig,
-  ProviderInstance,
-  StrapiEntity,
-  StrapiWrappedEntity,
-} from './../../types';
-import { getFieldsParameter, getPopulateParameter } from './provider';
+import { PluginConfig, ProviderInstance, StrapiEntity } from './../../types';
+import { getBulkEntities } from './provider';
 
 type AfterEvent = Event & {
   result: StrapiEntity;
@@ -22,30 +16,6 @@ type AfterBulkEvent = Event & {
 
 type Lifecycle = {
   loadLifecycleMethods: () => Promise<void>;
-};
-
-const getBulkEntities = async (
-  contentType: ContentType,
-  ids: number[],
-): Promise<StrapiWrappedEntity[]> => {
-  strapi.log.debug(`Getting entities for ${contentType.name} with ${ids.length} IDs`);
-  const filters = {
-    id: { $in: ids },
-  };
-  const fields = getFieldsParameter(contentType);
-  const populate = getPopulateParameter(fields);
-  const parameters = !!fields
-    ? {
-        fields,
-        populate,
-        filters,
-      }
-    : {
-        filters,
-      };
-  const entities = await strapi.entityService.findMany(contentType.name, parameters);
-  strapi.log.debug(`Retrieved ${entities?.data?.length || 0} entities for ${contentType.name}`);
-  return entities?.data || [];
 };
 
 /**
