@@ -1,5 +1,11 @@
 # @rixw/strapi-plugin-search
 
+## 2.0.1
+
+### Patch Changes
+
+- f58fe9b: Remove populate fields from the fields list when retrieving a page during rebuilding
+
 ## 2.0.0
 
 ### Major Changes
