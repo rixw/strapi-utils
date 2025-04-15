@@ -37,9 +37,12 @@ export const getBulkEntities = async (
   };
   const fields = getFieldsParameter(contentType);
   const populate = getPopulateParameter(contentType);
+  // Remove populate keys from fields
+  const populateKeys = Object.keys(populate ?? {});
+  const filteredFields = fields?.filter((field) => !populateKeys.includes(field)) ?? [];
   const parameters: FindManyParameters = {
     publicationState: 'live',
-    fields,
+    fields: filteredFields,
     populate,
     filters,
   };
