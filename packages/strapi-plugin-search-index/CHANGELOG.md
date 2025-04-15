@@ -1,5 +1,11 @@
 # @rixw/strapi-plugin-search
 
+## 1.0.2
+
+### Patch Changes
+
+- e9c267c: Removed unnecessary logging
+
 ## 1.0.1
 
 ### Patch Changes
