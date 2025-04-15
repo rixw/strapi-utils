@@ -1,5 +1,11 @@
 # @rixw/strapi-plugin-search
 
+## 2.0.0
+
+### Major Changes
+
+- 408a145: Remove fields from the explicit fields list if they are in the populate keys
+
 ## 1.0.4
 
 ### Patch Changes
