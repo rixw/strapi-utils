@@ -1,5 +1,11 @@
 # @rixw/strapi-plugin-search
 
+## 1.0.3
+
+### Patch Changes
+
+- 86a60a2: Fixed bug in building the populate parameter for index rebuilding
+
 ## 1.0.2
 
 ### Patch Changes

@@ -1,6 +1,6 @@
 {
   "name": "strapi-plugin-search-index",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "Site search engine integration plugin for Strapi",
   "keywords": [
     "strapi",
