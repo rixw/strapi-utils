@@ -15,7 +15,7 @@ const PAGE_SIZE = 100;
 
 export const getFieldsParameter = (contentType: ContentType): string[] | undefined => {
   if (contentType.fields === '*' || contentType.fields?.length === 0) return undefined;
-  strapi.log.debug(`Getting field parameters for to [${contentType.fields.join(', ')}]`);
+  // strapi.log.debug(`Getting field parameters for to [${contentType.fields.join(', ')}]`);
   const result = [
     ...contentType.fields,
     contentType.fields.includes('id') ? undefined : 'id',
@@ -24,12 +24,12 @@ export const getFieldsParameter = (contentType: ContentType): string[] | undefin
 };
 
 export const getPopulateParameter = (fieldParameter: string[] | null): PopulateParameter => {
-  strapi.log.debug(
-    `Getting poulate parameter for [${fieldParameter ? fieldParameter.join(', ') : '*'}]`,
-  );
+  // strapi.log.debug(
+  //   `Getting poulate parameter for [${fieldParameter ? fieldParameter.join(', ') : '*'}]`,
+  // );
   if (!fieldParameter) return '*';
   const result: { [key: string]: boolean } = {};
-  fieldParameter.forEach((x) => (result.populate[x] = true));
+  fieldParameter.forEach((x) => (result[x] = true));
   return result;
 };
 
@@ -44,7 +44,7 @@ const getPageOfEntities = async (
     page,
     pageSize,
   };
-  strapi.log.debug(`Querying page ${page} size ${pageSize} of ${contentType.name} entities`);
+  // strapi.log.debug(`Querying page ${page} size ${pageSize} of ${contentType.name} entities`);
   const fields = getFieldsParameter(contentType);
   if (fields) {
     parameters.fields = fields;
@@ -60,9 +60,9 @@ const getAllEntities = async (contentType: ContentType): Promise<StrapiEntity[]>
   let page = 1;
   let fullPage = false;
   do {
-    strapi.log.debug(`Retrieving page ${page} (size ${PAGE_SIZE}) of ${contentType.name} entities`);
+    // strapi.log.debug(`Retrieving page ${page} (size ${PAGE_SIZE}) of ${contentType.name} entities`);
     const pageOfEntities = await getPageOfEntities(contentType, page, PAGE_SIZE);
-    console.debug('Page of entities', pageOfEntities);
+    // console.debug('Page of entities', pageOfEntities);
     strapi.log.debug(`Retrieved ${pageOfEntities.length} ${contentType.name} entities`);
     result.push(...pageOfEntities);
     fullPage = pageOfEntities.length === PAGE_SIZE;
