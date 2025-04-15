@@ -15,34 +15,34 @@ export const getObjectId = (id: number | string, prefix?: string | null) => {
  * @returns {SanitizedEntity} - sanitized result
  */
 export const sanitize = (contentType: ContentType, entity: StrapiEntity): SanitizedEntity => {
-  strapi.log.debug(`Sanitizing entity ${JSON.stringify(entity)}`);
+  // strapi.log.debug(`Sanitizing entity ${JSON.stringify(entity)}`);
   if (!entity) throw new Error('Entity is null or undefined');
 
   const { idPrefix, fields, excludedFields, transforms } = contentType;
   const objectId = getObjectId(entity.id, idPrefix);
-  strapi.log.debug(`Sanitizing entity prefixedId: ${objectId}`);
+  // strapi.log.debug(`Sanitizing entity prefixedId: ${objectId}`);
 
   let transformedObject = structuredClone(entity);
   if (transforms) {
-    strapi.log.debug(`Transforming object ${JSON.stringify(transformedObject)}`);
+    // strapi.log.debug(`Transforming object ${JSON.stringify(transformedObject)}`);
     Object.entries(transforms).map((transform) => {
       const [key, transformFn] = transform as [string, Transform];
       try {
         const originalValue = get(key, entity);
-        strapi.log.debug(`Transforming ${key}, original value ${JSON.stringify(originalValue)}}`);
+        // strapi.log.debug(`Transforming ${key}, original value ${JSON.stringify(originalValue)}}`);
         if (originalValue) {
           const newValue = transformFn(structuredClone(originalValue));
-          strapi.log.debug(`Transformed ${key}, new value ${JSON.stringify(newValue)}}`);
+          // strapi.log.debug(`Transformed ${key}, new value ${JSON.stringify(newValue)}}`);
           transformedObject = set(key, newValue, transformedObject);
-          strapi.log.debug(
-            `Applied transformation to ${key}, new object ${JSON.stringify(transformedObject)}}`,
-          );
+          // strapi.log.debug(
+          //   `Applied transformation to ${key}, new object ${JSON.stringify(transformedObject)}}`,
+          // );
         }
       } catch (error) {
         strapi.log.warn(`An error occured when transforming ${key}`, error);
       }
     });
-    strapi.log.debug(`Final transformed entity ${JSON.stringify(transformedObject)}`);
+    // strapi.log.debug(`Final transformed entity ${JSON.stringify(transformedObject)}`);
   }
 
   let filteredObject: object;
@@ -57,13 +57,13 @@ export const sanitize = (contentType: ContentType, entity: StrapiEntity): Saniti
   } else {
     filteredObject = { ...transformedObject };
   }
-  strapi.log.debug(`Filtered object ${JSON.stringify(filteredObject)}`);
+  // strapi.log.debug(`Filtered object ${JSON.stringify(filteredObject)}`);
   const result = {
     objectId,
     id: entity.id,
     contentType: contentType.name,
     ...filteredObject,
   };
-  strapi.log.debug(`Sanitized entity ${JSON.stringify(result)}`);
+  // strapi.log.debug(`Sanitized entity ${JSON.stringify(result)}`);
   return result;
 };

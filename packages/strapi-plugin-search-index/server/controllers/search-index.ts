@@ -8,8 +8,8 @@ export type RebuildPayload = {
 
 export default ({ strapi }: { strapi: Strapi }) => ({
   rebuild(ctx) {
-    strapi.log.debug('Rebuild endpoint called');
-    console.debug('Search Index config', strapi.config.get('plugin.search-index'));
+    strapi.log.debug('Rebuild endpoint called', strapi.config.get('plugin.search-index'));
+    // console.debug('Search Index config', strapi.config.get('plugin.search-index'));
     // Check that the plugin is enabled
     const enabled = strapi.config.get('plugin.search-index').enableRebuildEndpoint || false;
     if (!enabled) {
@@ -34,9 +34,9 @@ export default ({ strapi }: { strapi: Strapi }) => ({
     // Call the rebuild function - this is async but we won't await it
     try {
       strapi.log.debug('Calling in to rebuild service');
-      console.debug('Plugin:', strapi.plugin('search-index'));
-      console.debug('Services:', strapi.plugin('search-index').services);
-      console.debug('Provider:', strapi.plugin('search-index').service('provider'));
+      // console.debug('Plugin:', strapi.plugin('search-index'));
+      // console.debug('Services:', strapi.plugin('search-index').services);
+      // console.debug('Provider:', strapi.plugin('search-index').service('provider'));
       strapi.plugin('search-index').service('provider').rebuild(payload.contentTypes, {});
     } catch (error) {
       throw createError.InternalServerError('Something went wrong');
