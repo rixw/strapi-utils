@@ -14,7 +14,7 @@ import { validateProvider } from '../utils/validate';
 const PAGE_SIZE = 100;
 
 export const getFieldsParameter = (contentType: ContentType): string[] | undefined => {
-  if (contentType.fields === '*' || contentType.fields.length > 0) return undefined;
+  if (contentType.fields === '*' || contentType.fields?.length === 0) return undefined;
   strapi.log.debug(`Getting field parameters for to [${contentType.fields.join(', ')}]`);
   const result = [
     ...contentType.fields,
