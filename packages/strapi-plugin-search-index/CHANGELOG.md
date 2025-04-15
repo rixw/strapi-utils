@@ -1,5 +1,11 @@
 # @rixw/strapi-plugin-search
 
+## 1.0.1
+
+### Patch Changes
+
+- adcb9dd: Correctly set the fields parameter when retrieving entities for an index rebuild
+
 ## 1.0.0
 
 ### Major Changes
