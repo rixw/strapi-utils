@@ -1,4 +1,4 @@
-import { Event } from '@strapi/database/lib/lifecycles';
+import { Event } from '@strapi/database/dist/lifecycles';
 import { getObjectId, sanitize } from '../utils/sanitize';
 import { PluginConfig, ProviderInstance, StrapiEntity } from './../../types';
 import { getBulkEntities } from './provider';

@@ -28,7 +28,7 @@
     "clean": "rm -rf dist"
   },
   "dependencies": {
-    "algoliasearch": "^4.17.0",
+    "algoliasearch": "^5.28.0",
     "lodash": "4.17.21",
     "strapi-plugin-search-index": "*"
   },

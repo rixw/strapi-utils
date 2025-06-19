@@ -1,4 +1,4 @@
-import algoliasearch, { SearchClient } from 'algoliasearch';
+import { algoliasearch, SearchClient } from 'algoliasearch';
 import { omit } from 'lodash/fp';
 import {
   ClearProps,
@@ -48,9 +48,11 @@ export = {
 
     const client = algoliasearch(applicationId, apiKey);
 
-    await client.getApiKey(apiKey, { timeout: 3000 }).catch((error) => {
-      throw new Error(`Algolia provider could not initialize: ${error.message}`);
-    });
+    await client
+      .getApiKey({ key: apiKey }, { timeouts: { read: 3000, connect: 3000 } })
+      .catch((error) => {
+        throw new Error(`Algolia provider could not initialize: ${error.message}`);
+      });
 
     const result: AlgoliaInstance = {
       /**
@@ -71,8 +73,7 @@ export = {
       create({ indexName, data }: CreateProps): Promise<void> {
         const objectID = data.objectId;
         return client
-          .initIndex(indexName)
-          .saveObject({ objectID, ...omit('objectId', data) })
+          .saveObject({ indexName, body: { objectID, ...omit('objectId', data) } })
           .then(
             () =>
               debug &&
@@ -96,8 +97,12 @@ export = {
       update({ indexName, data }: CreateProps) {
         const objectID = data.objectId;
         return client
-          .initIndex(indexName)
-          .partialUpdateObject({ objectID, ...omit('objectId', data) }, { createIfNotExists: true })
+          .partialUpdateObject({
+            indexName,
+            objectID,
+            attributesToUpdate: { ...omit('objectId', data) },
+            createIfNotExists: true,
+          })
           .then(
             () =>
               debug &&
@@ -120,8 +125,7 @@ export = {
        */
       delete({ indexName, objectId }: DeleteProps) {
         return client
-          .initIndex(indexName)
-          .deleteObject(objectId)
+          .deleteObject({ indexName, objectID: objectId })
           .then(
             () =>
               debug &&
@@ -148,8 +152,7 @@ export = {
           ...omit('objectId', entry),
         }));
         return client
-          .initIndex(indexName)
-          .saveObjects(mappedData)
+          .saveObjects({ indexName, objects: mappedData })
           .then(
             () =>
               debug &&
@@ -170,17 +173,16 @@ export = {
        * @param {Array<CreateManyProps>} params.data - Data of the to be updated entries
        * @returns {Promise<algoliasearch.ChunkedBatchResponse>} Promise with chunked task
        */
-      updateMany({ indexName, data }: CreateManyProps) {
-        data = data.map((entry) => ({ objectID: entry.id, ...entry }));
+      updateMany({ indexName, data: objects }: CreateManyProps) {
+        objects = objects.map((entry) => ({ objectID: entry.id, ...entry }));
 
         return client
-          .initIndex(indexName)
-          .partialUpdateObjects(data, { createIfNotExists: true })
+          .partialUpdateObjects({ indexName, objects, createIfNotExists: true })
           .then(
             () =>
               debug &&
               strapi.log.debug(
-                `Algolia provider: Updated ${data.length} entries on index '${indexName}'.`,
+                `Algolia provider: Updated ${objects.length} entries on index '${indexName}'.`,
               ),
           )
           .catch((error) => {
@@ -198,8 +200,7 @@ export = {
        */
       deleteMany({ indexName, objectIds }: DeleteManyProps) {
         return client
-          .initIndex(indexName)
-          .deleteObjects(objectIds)
+          .deleteObjects({ indexName, objectIDs: objectIds })
           .then(
             () =>
               debug &&
@@ -221,8 +222,7 @@ export = {
        */
       clear({ indexName }: ClearProps): Promise<void> {
         return client
-          .initIndex(indexName)
-          .clearObjects()
+          .clearObjects({ indexName })
           .then(
             () =>
               debug &&

@@ -46,8 +46,11 @@ export const getBulkEntities = async (
     populate,
     filters,
   };
+  // @ts-ignore
   const entities = await strapi.entityService.findMany(contentType.name, parameters);
+  // @ts-ignore
   strapi.log.debug(`Retrieved ${entities?.data?.length || 0} entities for ${contentType.name}`);
+  // @ts-ignore
   return entities?.data || [];
 };
 
@@ -68,6 +71,7 @@ const getPageOfEntities = async (
     page,
     pageSize,
   };
+  // @ts-ignore
   return strapi.entityService.findMany(contentType.name, parameters);
 };
 

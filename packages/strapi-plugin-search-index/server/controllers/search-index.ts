@@ -11,7 +11,8 @@ export default ({ strapi }: { strapi: Strapi }) => ({
     strapi.log.debug('Rebuild endpoint called', strapi.config.get('plugin.search-index'));
     // console.debug('Search Index config', strapi.config.get('plugin.search-index'));
     // Check that the plugin is enabled
-    const enabled = strapi.config.get('plugin.search-index').enableRebuildEndpoint || false;
+    const enabled =
+      (strapi.config.get('plugin.search-index') as any)?.enableRebuildEndpoint || false;
     if (!enabled) {
       throw createError.Forbidden('Rebuild endpoint is disabled');
     }
