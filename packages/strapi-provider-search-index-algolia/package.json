@@ -1,6 +1,6 @@
 {
   "name": "strapi-provider-search-index-algolia",
-  "version": "0.5.1",
+  "version": "1.0.0",
   "description": "This is the description of the plugin.",
   "keywords": [
     "strapi",

@@ -1,5 +1,16 @@
 # @rixw/strapi-provider-search-algolia
 
+## 1.0.0
+
+### Major Changes
+
+- c40e8e6: Update Algolia dependencies to v5
+
+### Patch Changes
+
+- Updated dependencies [c40e8e6]
+  - strapi-plugin-search-index@3.0.0
+
 ## 0.5.1
 
 ### Patch Changes
