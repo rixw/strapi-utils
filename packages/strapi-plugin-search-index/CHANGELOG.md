@@ -1,5 +1,11 @@
 # @rixw/strapi-plugin-search
 
+## 3.0.0
+
+### Major Changes
+
+- c40e8e6: Update Algolia dependencies to v5
+
 ## 2.0.1
 
 ### Patch Changes
