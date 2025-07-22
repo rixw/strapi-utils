@@ -148,11 +148,11 @@ export class StrapiClient {
     try {
       const url = this.getEndpoint(entityName, id, params);
       this.opts.debug && console.debug('StrapiClient:fetchRawResult: url', url);
-      const headers = this.opts.jwt
-        ? {
-            Authorization: `Bearer ${this.opts.jwt}`,
-          }
-        : undefined;
+      const headers = {
+        Authorization: this.opts.jwt ? `Bearer ${this.opts.jwt}` : undefined,
+        'Content-Type': 'application/json',
+        Accept: 'application/json',
+      } as HeadersInit;
       this.opts.debug &&
         console.debug('StrapiClient:fetchRawResult: headers', loggableObject(headers));
       const response = await fetch(url, {
