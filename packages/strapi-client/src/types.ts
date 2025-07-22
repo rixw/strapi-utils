@@ -642,7 +642,7 @@ export type StrapiClientOptions = {
   prefix?: string;
   contentTypes: StrapiContentTypeInput[];
   jwt?: string | null;
-  axiosConfig?: AxiosRequestConfig;
+  requestInit?: RequestInit;
   maxRequestsPerSecond?: number;
   debug?: boolean;
 };

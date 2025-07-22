@@ -1,15 +1,14 @@
-import axios from 'axios';
-import MockAdapter from 'axios-mock-adapter';
 import fixture from '../normalise/normalise.fixture.json';
 import { FixtureData } from '../normalise/normalise.spec';
 import { StrapiPaginationOffsetResponse, StrapiPaginationPageResponse } from './../types';
 import { StrapiClient } from './client';
+import fetchMock from 'fetch-mock';
 
-let mock = new MockAdapter(axios);
+fetchMock.mockGlobal();
 
 describe('StrapiClient', () => {
   beforeEach(async () => {
-    mock.reset();
+    fetchMock.hardReset();
   });
 
   it('should instantiate with default options', async () => {
@@ -18,7 +17,7 @@ describe('StrapiClient', () => {
     expect(client.opts.url).toBe(`http://127.0.0.1:1337`);
     expect(client.opts.prefix).toBe('/api');
     expect(client.opts.jwt).toBeNull();
-    expect(client.opts.axiosConfig).toBeDefined();
+    expect(client.opts.requestInit).toBeDefined();
     expect(client.opts.contentTypes).toHaveLength(0);
     expect(client.entityMap).toBeDefined();
     expect(client.entityMap.size).toBe(0);
@@ -31,16 +30,16 @@ describe('StrapiClient', () => {
       prefix: '/api',
       contentTypes: ['page'],
       jwt: '1234567890',
-      axiosConfig: {
-        timeout: 999,
+      requestInit: {
+        keepalive: true,
       },
       debug: true,
     });
     expect(client).toBeInstanceOf(StrapiClient);
     expect(client.opts.url).toBe('http://127.0.0.1:9999');
     expect(client.opts.jwt).toBe('1234567890');
-    expect(client.opts.axiosConfig).toBeDefined();
-    expect(client.opts.axiosConfig?.timeout).toBe(999);
+    expect(client.opts.requestInit).toBeDefined();
+    expect(client.opts.requestInit?.keepalive).toBe(true);
     expect(client.entityMap.size).toBe(1);
     expect(client.entityMap.get('page')).toBeDefined();
     expect(client.entityMap.get('page')?.id).toBe('api::page.page');
@@ -63,15 +62,15 @@ describe('StrapiClient', () => {
         },
       ],
       jwt: '1234567890',
-      axiosConfig: {
-        timeout: 999,
+      requestInit: {
+        keepalive: true,
       },
     });
     expect(client).toBeInstanceOf(StrapiClient);
     expect(client.opts.url).toBe('http://127.0.0.1:9999');
     expect(client.opts.jwt).toBe('1234567890');
-    expect(client.opts.axiosConfig).toBeDefined();
-    expect(client.opts.axiosConfig?.timeout).toBe(999);
+    expect(client.opts.requestInit).toBeDefined();
+    expect(client.opts.requestInit?.keepalive).toBe(true);
     expect(client.entityMap.size).toBe(2);
     expect(client.entityMap.get('page')).toBeDefined();
     expect(client.entityMap.get('page')?.id).toBe('api::page.page');
@@ -94,7 +93,9 @@ describe('StrapiClient', () => {
 
   describe('fetchMany', () => {
     it('should debug log the call', async () => {
-      mock.onGet().reply(200, fixture);
+      fetchMock
+        .mockGlobal()
+        .get('*', { body: fixture, headers: { 'Content-Type': 'application/json' } });
       const client = new StrapiClient({
         contentTypes: ['page'],
         debug: true,
@@ -104,25 +105,55 @@ describe('StrapiClient', () => {
       expect(result).toHaveLength(3);
     });
 
-    it('should respect provided axios config', async () => {
+    it('should respect provided requestInit', async () => {
       const url = `http://127.0.0.1:1337/api/pages`;
-      mock.onGet(url).reply((config) => {
-        expect(config.timeout).toBe(12345);
-        return [200, fixture];
-      });
+      fetchMock
+        .mockGlobal()
+        .get('*', { body: fixture, headers: { 'Content-Type': 'application/json' } });
       const client = new StrapiClient({
         contentTypes: ['page'],
-        axiosConfig: {
-          timeout: 12345,
+        requestInit: {
+          keepalive: true,
+          cache: 'no-store',
         },
       });
       const result = await client.fetchMany<FixtureData>('page');
       expect(result).toHaveLength(3);
+      expect(fetchMock.callHistory.calls()[0].options?.keepalive).toBe(true);
+      expect(fetchMock.callHistory.calls()[0].options?.cache).toBe('no-store');
+    });
+
+    it('should support AbortController', async () => {
+      const url = `http://127.0.0.1:1337/api/pages`;
+      fetchMock
+        .mockGlobal()
+        .get(
+          '*',
+          { body: fixture, headers: { 'Content-Type': 'application/json' } },
+          { delay: 10000 },
+        );
+      const abortController = new AbortController();
+      const id = setTimeout(() => abortController.abort(), 100);
+      const client = new StrapiClient({
+        contentTypes: ['page'],
+        requestInit: {
+          signal: abortController.signal,
+        },
+      });
+      expect.assertions(1);
+      try {
+        const result = await client.fetchMany<FixtureData>('page');
+        clearTimeout(id);
+      } catch (error) {
+        expect(error).toHaveProperty('name', 'AbortError');
+      }
     });
 
     it('should return a normalised result with pagination', async () => {
       const url = `http://127.0.0.1:1337/api/pages`;
-      mock.onGet(url).reply(200, fixture);
+      fetchMock
+        .mockGlobal()
+        .get(url, { body: fixture, headers: { 'Content-Type': 'application/json' } });
       const client = new StrapiClient({
         contentTypes: ['page'],
       });
@@ -142,7 +173,9 @@ describe('StrapiClient', () => {
 
     it('should support Strapi parameters', async () => {
       const url = `http://127.0.0.1:1337/api/pages`;
-      mock.onGet().reply(200, fixture);
+      fetchMock
+        .mockGlobal()
+        .get('*', { body: fixture, headers: { 'Content-Type': 'application/json' } });
       const client = new StrapiClient({
         contentTypes: ['page'],
       });
@@ -158,8 +191,8 @@ describe('StrapiClient', () => {
         locale: 'en',
         fields: ['title', 'slug'],
       });
-      expect(mock.history.get).toHaveLength(1);
-      const calledUrl = new URL(mock.history.get[0].url as string);
+      expect(fetchMock.callHistory.calls()).toHaveLength(1);
+      const calledUrl = new URL(fetchMock.callHistory.calls()[0].url as string);
       const { searchParams } = calledUrl;
       expect(searchParams.get('populate')).toBe('deep,3');
       expect(searchParams.get('sort[0]')).toBe('title:asc');
@@ -180,7 +213,9 @@ describe('StrapiClient', () => {
 
     it('should support nested filter parameters', async () => {
       const url = `http://127.0.0.1:1337/api/pages`;
-      mock.onGet().reply(200, fixture);
+      fetchMock
+        .mockGlobal()
+        .get('*', { body: fixture, headers: { 'Content-Type': 'application/json' } });
       const client = new StrapiClient({
         contentTypes: ['page'],
       });
@@ -200,8 +235,8 @@ describe('StrapiClient', () => {
           },
         },
       });
-      expect(mock.history.get).toHaveLength(1);
-      const calledUrl = new URL(mock.history.get[0].url as string);
+      expect(fetchMock.callHistory.calls()).toHaveLength(1);
+      const calledUrl = new URL(fetchMock.callHistory.calls()[0].url as string);
       const { searchParams } = calledUrl;
       expect(searchParams.get('filters[child_pages][slug][$eq]')).toBe('node');
     });
@@ -210,9 +245,12 @@ describe('StrapiClient', () => {
   describe('fetchById', () => {
     it('should return a normalised single item result', async () => {
       const url = `http://127.0.0.1:1337/api/pages/1`;
-      mock.onGet(url).reply(200, {
-        data: fixture.data[0],
-        meta: {},
+      fetchMock.mockGlobal().get(url, {
+        body: {
+          data: fixture.data[0],
+          meta: {},
+        },
+        headers: { 'Content-Type': 'application/json' },
       });
       const client = new StrapiClient({
         contentTypes: ['page'],
@@ -227,9 +265,12 @@ describe('StrapiClient', () => {
   describe('fetchFirst', () => {
     it('should return a normalised single item result', async () => {
       const url = /http:\/\/127.0.0.1:1337\/api\/pages.+/;
-      mock.onGet(url).reply(200, {
-        data: fixture.data.filter((item) => item.attributes.url === '/root/node/leaf'),
-        meta: {},
+      fetchMock.mockGlobal().get(url, {
+        body: {
+          data: fixture.data.filter((item) => item.attributes.url === '/root/node/leaf'),
+          meta: {},
+        },
+        headers: { 'Content-Type': 'application/json' },
       });
       const client = new StrapiClient({
         contentTypes: ['page'],
@@ -249,7 +290,7 @@ describe('StrapiClient', () => {
       expect(result).toBeDefined();
       expect(result?.id).toBe(3);
       expect(result?.title).toBe('Leaf');
-      const calledUrl = new URL(mock.history.get[0].url as string);
+      const calledUrl = new URL(fetchMock.callHistory.calls()[0].url as string);
       const { searchParams } = calledUrl;
       expect(searchParams.get('filters[$or][0][title][$eq]')).toBe('Root');
       expect(searchParams.get('filters[$or][1][title][$eq]')).toBe('Node');
@@ -264,9 +305,13 @@ describe('StrapiClient', () => {
   describe('create', () => {
     it('should create a new item and return the normalised single item result', async () => {
       const url = `http://127.0.0.1:1337/api/pages`;
-      mock.onPost(url).reply(201, {
-        data: fixture.data[0],
-        meta: {},
+      fetchMock.mockGlobal().post(url, {
+        status: 201,
+        body: {
+          data: fixture.data[0],
+          meta: {},
+        },
+        headers: { 'Content-Type': 'application/json' },
       });
       const client = new StrapiClient({
         contentTypes: ['page'],
@@ -281,9 +326,12 @@ describe('StrapiClient', () => {
   describe('update', () => {
     it('should update an item and return the normalised single item result', async () => {
       const url = `http://127.0.0.1:1337/api/pages/1`;
-      mock.onPut(url).reply(200, {
-        data: fixture.data[0],
-        meta: {},
+      fetchMock.mockGlobal().put(url, {
+        body: {
+          data: fixture.data[0],
+          meta: {},
+        },
+        headers: { 'Content-Type': 'application/json' },
       });
       const client = new StrapiClient({
         contentTypes: ['page'],
@@ -298,9 +346,12 @@ describe('StrapiClient', () => {
   describe('delete', () => {
     it('should delete an item and return the normalised single item result', async () => {
       const url = `http://127.0.0.1:1337/api/pages/2`;
-      mock.onDelete(url).reply(200, {
-        data: fixture.data[1],
-        meta: {},
+      fetchMock.mockGlobal().delete(url, {
+        body: {
+          data: fixture.data[1],
+          meta: {},
+        },
+        headers: { 'Content-Type': 'application/json' },
       });
       const client = new StrapiClient({
         contentTypes: ['page'],
@@ -314,21 +365,34 @@ describe('StrapiClient', () => {
 
   describe('fetchAll', () => {
     it('should fetch all items and return a simple array', async () => {
-      mock
-        .onGet()
-        .replyOnce(200, {
-          data: [fixture.data[0]],
-          meta: { pagination: { start: 0, limit: 1, total: 3 } as StrapiPaginationOffsetResponse },
+      fetchMock
+        .mockGlobal()
+        .get(/pagination\[start\]\=0/, {
+          body: {
+            data: [fixture.data[0]],
+            meta: {
+              pagination: { start: 0, limit: 1, total: 3 } as StrapiPaginationOffsetResponse,
+            },
+          },
+          headers: { 'Content-Type': 'application/json' },
         })
-        .onGet()
-        .replyOnce(200, {
-          data: [fixture.data[1]],
-          meta: { pagination: { start: 1, limit: 1, total: 3 } as StrapiPaginationOffsetResponse },
+        .get(/pagination\[start\]\=1/, {
+          body: {
+            data: [fixture.data[1]],
+            meta: {
+              pagination: { start: 1, limit: 1, total: 3 } as StrapiPaginationOffsetResponse,
+            },
+          },
+          headers: { 'Content-Type': 'application/json' },
         })
-        .onGet()
-        .replyOnce(200, {
-          data: [fixture.data[2]],
-          meta: { pagination: { start: 2, limit: 1, total: 3 } as StrapiPaginationOffsetResponse },
+        .get(/pagination\[start\]\=2/, {
+          body: {
+            data: [fixture.data[2]],
+            meta: {
+              pagination: { start: 2, limit: 1, total: 3 } as StrapiPaginationOffsetResponse,
+            },
+          },
+          headers: { 'Content-Type': 'application/json' },
         });
       const client = new StrapiClient({
         contentTypes: ['page'],
@@ -345,23 +409,53 @@ describe('StrapiClient', () => {
     });
 
     it('should throw if fetching all items takes longer than the timeout', async () => {
-      const slowMock = new MockAdapter(axios, { delayResponse: 500 });
-      slowMock
-        .onGet()
-        .replyOnce(200, {
-          data: [fixture.data[0]],
-          meta: { pagination: { start: 0, limit: 1, total: 3 } as StrapiPaginationOffsetResponse },
-        })
-        .onGet()
-        .replyOnce(200, {
-          data: [fixture.data[1]],
-          meta: { pagination: { start: 1, limit: 1, total: 3 } as StrapiPaginationOffsetResponse },
-        })
-        .onGet()
-        .replyOnce(200, {
-          data: [fixture.data[2]],
-          meta: { pagination: { start: 2, limit: 1, total: 3 } as StrapiPaginationOffsetResponse },
-        });
+      fetchMock
+        .mockGlobal()
+        .get(
+          /pagination\[page\]\=1/,
+          {
+            body: {
+              data: [fixture.data[0]],
+              meta: {
+                pagination: { start: 0, limit: 1, total: 3 } as StrapiPaginationOffsetResponse,
+              },
+            },
+            headers: { 'Content-Type': 'application/json' },
+          },
+          {
+            delay: 500,
+          },
+        )
+        .get(
+          /pagination\[page\]\=2/,
+          {
+            body: {
+              data: [fixture.data[1]],
+              meta: {
+                pagination: { start: 1, limit: 1, total: 3 } as StrapiPaginationOffsetResponse,
+              },
+            },
+            headers: { 'Content-Type': 'application/json' },
+          },
+          {
+            delay: 500,
+          },
+        )
+        .get(
+          /pagination\[page\]\=3/,
+          {
+            body: {
+              data: [fixture.data[2]],
+              meta: {
+                pagination: { start: 2, limit: 1, total: 3 } as StrapiPaginationOffsetResponse,
+              },
+            },
+            headers: { 'Content-Type': 'application/json' },
+          },
+          {
+            delay: 500,
+          },
+        );
       const client = new StrapiClient({
         contentTypes: ['page'],
       });
