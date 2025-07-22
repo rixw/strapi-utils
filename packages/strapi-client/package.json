@@ -1,6 +1,6 @@
 {
   "name": "@rixw/strapi-client",
-  "version": "0.5.0",
+  "version": "0.5.1",
   "description": "A generic client SDK for Strapi REST APIs",
   "keywords": [
     "strapi",
