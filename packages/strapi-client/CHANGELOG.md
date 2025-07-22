@@ -1,5 +1,11 @@
 # @rixw/strapi-client
 
+## 0.5.0
+
+### Minor Changes
+
+- 7ac8f8c: Switch to fetch rather than Axios
+
 ## 0.4.2
 
 ### Patch Changes
