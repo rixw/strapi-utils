@@ -1,7 +1,7 @@
 # Strapi Client
 
-This is a generic REST API client for [Strapi](https://strapi.io/) v4. It is
-being created with a couple of objectives:
+This is a generic REST API client for [Strapi](https://strapi.io/) v4. It has
+been created with a couple of objectives:
 
 - Simplify the process of calling Strapi APIs from the frontend
 - Unwrap Strapi's complicated data structure and return a simple object or array
@@ -35,8 +35,8 @@ library will not be necessary. I have not tested this library with Strapi v5.
 Because of the different REST API response formats in Strapi v3 and v4, this
 library is not compatible with Strapi v3.
 
-HTTP requests use [Axios](https://axios-http.com/) so can work on both client
-and server side.
+As of version 0.5 this library uses Node's native `fetch` API rather than
+Axios as used in previous versions.
 
 ## Kudos to `strapi-sdk-js`
 
@@ -67,6 +67,12 @@ Using pnpm:
 $ pnpm add @rixw/strapi-client
 ```
 
+Using bun:
+
+```
+$ bun add @rixw/strapi-client
+```
+
 ## Basic usage
 
 ```typescript
@@ -79,7 +85,8 @@ const client = new StrapiClient({
   contentTypes: ['page', 'post'], // Singular names of entities
 });
 
-// Login - sets the JWT token in the client if using Users & Permissions plugin
+// Login - sets the JWT token in the client instance if using Users &
+// Permissions plugin
 const jwt = await client.login('example@example.com', 'password');
 
 // Retrieve a list of items
@@ -127,29 +134,20 @@ const page = await client.fetchById<Page>('page', 1);
   // A JWT token to use for authentication. You can provide either Strapi's
   // long-lived API Tokens or, if you've cached a short-term JWT token from the
   // Users & Permissions plugin, you can provide that instead. Optional - if
-  // not provided no Authorization header will be sent.
+  // not provided, no Authorization header will be sent.
   jwt: 'xxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx',
 
-  // An Axios config object to use for all requests. Optional. Allows overriding
-  // the default timeout, headers, etc. You could provide an HttpAgent to
-  // implement rate limiting, for example.
-  // See https://github.com/axios/axios#request-config for more details.
-  // Note that headers set by the client (Authorization, Accept, Content-Type)
-  // will override any headers you provide here.
-  axiosConfig?: {
-    timeout: 1000,
-    maxRedirects: 5,
-    httpAgent: new http.Agent({ keepAlive: true }),
-    httpsAgent: new https.Agent({ keepAlive: true }),
-    proxy: {
-      protocol: 'https',
-      host: '127.0.0.1',
-      port: 9000,
-      auth: {
-        username: 'proxyuser',
-        password: 'proxypassword'
-      },
-    },
+  // An RequestInit object to use with fetch for all requests. Optional. Allows
+  // overriding the default timeout, headers, etc. You could provide an
+  // HttpAgent to implement rate limiting, or an AbortController.signal to
+  // manage timeouts for example.
+  // See https://developer.mozilla.org/en-US/docs/Web/API/RequestInit for more
+  // details. Note that headers set by the client (Authorization, Accept,
+  // Content-Type) will override any headers you provide here.
+  requestInit?: {
+    keepalive: true, // Keep the connection alive
+    redirect: 'follow', // Follow redirects
+    cache: 'no-cache', // Do not cache responses
   },
 
   // If true, the client will log debug information to the console.
@@ -173,7 +171,7 @@ const jwt = await client.login({
 
 Convenience method to login to the Users & Permissions plugin. Makes a POST
 request to `${baseURL}/auth/local` with the provided credentials and sets the
-JWT token in the client. Returns the JWT token.
+JWT token in the client instance. Returns the JWT token.
 
 #### `fetchById<T extends StrapiEntity> => Promise<T>`
 

@@ -1,8 +1,7 @@
-import axios, { AxiosError, AxiosInstance } from 'axios';
-import rateLimit, { RateLimitedAxiosInstance } from 'axios-rate-limit';
 import pluralize from 'pluralize';
 import qs from 'qs';
 import { defaultOptions } from '../constants';
+import { normaliseStrapiResponseArray, normaliseStrapiResponseItem } from '../normalise';
 import {
   ID,
   StrapiAuthenticationResponse,
@@ -10,13 +9,11 @@ import {
   StrapiContentType,
   StrapiContentTypeInput,
   StrapiEntity,
-  StrapiError,
   StrapiPaginatedArray,
   StrapiParams,
   StrapiResponse,
   StrapiUser,
 } from '../types';
-import { normaliseStrapiResponseArray, normaliseStrapiResponseItem } from '../normalise';
 
 const getSimpleEntitySpec = (contentType: string): StrapiContentType => {
   return {
@@ -45,7 +42,7 @@ export class StrapiClient {
   opts: StrapiClientOptions;
   readonly entityMap: Map<string, StrapiContentType>;
   user?: StrapiUser;
-  axiosInstance: AxiosInstance | RateLimitedAxiosInstance;
+  requestInit: RequestInit;
 
   /**
    * StrapiClient constructor
@@ -54,7 +51,7 @@ export class StrapiClient {
    * @param options.url - The URL of your Strapi instance, defaults to http://localhost:1337
    * @param options.prefix - The prefix for your Strapi instance, defaults to /api
    * @param options.jwt - The JWT token to use for authentication if using long-lived AuthTokens
-   * @param options.axiosConfig - Axios configuration options, passed directly to axios
+   * @param options.requestInit - Fetch API configuration options, passed directly to fetch
    * @param options.contentTypes - The content types you want to use with your Strapi instance
    * @param options.maxRequestsPerSecond - The maximum number of requests per second
    * @param options.debug - Whether to log debug information to the console
@@ -67,11 +64,7 @@ export class StrapiClient {
       const spec = getEntitySpec(contentType);
       this.entityMap.set(spec.singularName, spec);
     });
-    this.axiosInstance = this.opts.maxRequestsPerSecond
-      ? rateLimit(axios.create(this.opts.axiosConfig), {
-          maxRPS: this.opts.maxRequestsPerSecond,
-        })
-      : axios.create(this.opts.axiosConfig);
+    this.requestInit = this.opts.requestInit ?? {};
   }
 
   private getUrl(path: string): string {
@@ -104,19 +97,27 @@ export class StrapiClient {
    */
   public async login(identifier: string, password: string): Promise<string> {
     this.opts.debug && console.debug('StrapiClient:login', identifier);
-    const response = await axios.get(this.getUrl('/auth/local'), {
-      ...this.opts.axiosConfig,
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        Accept: 'application/json',
-      },
-      data: JSON.stringify({ identifier, password }),
-    });
-    const json = (await response.data) as StrapiAuthenticationResponse;
-    this.opts.jwt = json.jwt;
-    this.user = json.user;
-    return json.jwt;
+    try {
+      const response = await fetch(this.getUrl('/auth/local'), {
+        ...this.requestInit,
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Accept: 'application/json',
+        },
+        body: JSON.stringify({ identifier, password }),
+      });
+      if (!response.ok) {
+        throw new Error(`StrapiClient:fetchRawResult: ${response.status} ${response.statusText}`);
+      }
+      const data = (await response.json()) as StrapiAuthenticationResponse;
+      this.opts.jwt = data.jwt;
+      this.user = data.user;
+      return data.jwt;
+    } catch (err) {
+      this.opts.debug && console.debug('StrapiClient:login: error', loggableObject(err));
+      throw err;
+    }
   }
 
   /**
@@ -154,37 +155,27 @@ export class StrapiClient {
         : undefined;
       this.opts.debug &&
         console.debug('StrapiClient:fetchRawResult: headers', loggableObject(headers));
-      const response = await axios({
-        ...this.opts.axiosConfig,
+      const response = await fetch(url, {
+        ...this.requestInit,
         method,
-        url,
         headers,
-        data,
+        body: JSON.stringify(data),
       });
       this.opts.debug &&
         console.debug(
           'StrapiClient:fetchRawResult: response.status',
           loggableObject(response?.status),
         );
+      if (!response.ok) {
+        throw new Error(`StrapiClient:fetchRawResult: ${response.status} ${response.statusText}`);
+      }
+      const responseData = await response.json();
       this.opts.debug &&
-        console.debug('StrapiClient:fetchRawResult: response.data', loggableObject(response?.data));
-      return response.data as StrapiResponse;
+        console.debug('StrapiClient:fetchRawResult: response.data', loggableObject(responseData));
+      return responseData as StrapiResponse;
     } catch (err) {
       this.opts.debug && console.debug('StrapiClient:fetchRawResult: error', loggableObject(err));
-      const e = err as AxiosError<StrapiError>;
-      if (!e.response) {
-        throw {
-          data: null,
-          error: {
-            status: 500,
-            name: 'UnknownError',
-            message: e.message,
-            details: e,
-          },
-        };
-      } else {
-        throw e.response.data;
-      }
+      throw err;
     }
   }
 
