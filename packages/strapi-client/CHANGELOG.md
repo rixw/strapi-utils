@@ -1,5 +1,11 @@
 # @rixw/strapi-client
 
+## 0.5.1
+
+### Patch Changes
+
+- 1f07705: Ensure content type is specified for requests
+
 ## 0.5.0
 
 ### Minor Changes
