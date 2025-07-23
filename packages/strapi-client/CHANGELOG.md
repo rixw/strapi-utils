@@ -1,5 +1,11 @@
 # @rixw/strapi-client
 
+## 0.5.2
+
+### Patch Changes
+
+- 6df9750: Fix format of data update
+
 ## 0.5.1
 
 ### Patch Changes
