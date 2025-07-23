@@ -159,7 +159,7 @@ export class StrapiClient {
         ...this.requestInit,
         method,
         headers,
-        body: JSON.stringify(data),
+        body: data ? JSON.stringify({ data }) : undefined,
       });
       this.opts.debug &&
         console.debug(
