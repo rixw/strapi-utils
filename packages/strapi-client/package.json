@@ -37,13 +37,13 @@
   },
   "dependencies": {
     "@strapi/strapi": "^4.11.4",
-    "@types/fetch-mock": "9.2.2",
     "fetch-mock": "12.5.3",
     "pluralize": "8.0.0",
     "qs": "6.11.2",
     "tsup": "7.1.0"
   },
   "devDependencies": {
+    "@types/fetch-mock": "9.2.2",
     "@types/jest": "^29.5.0",
     "@types/node": "^18.15.11",
     "@types/pluralize": "0.0.29",
